@@ -1,0 +1,507 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    @using Microsoft.AspNetCore.Http
+    @{
+        var userName = Context.Session.GetString("UserName");
+    }
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1946/1946488.png" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.2/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.2/dist/sweetalert2.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Include Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        ನಮ್ಮ ಮನೆ ಖರ್ಚು
+    </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+  
+
+      
+        :root {
+            --top-nav-color: #343a40;
+            --left-nav-color: #212529;
+            --main-content-color: #f8f9fa;
+        }
+
+      
+        .top-nav {
+            background-color: var(--top-nav-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+        }
+
+            .top-nav .title {
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+        .session-details {
+            font-size: 14px;
+        }
+
+        .left-nav {
+            position: fixed;
+            top: 47px;
+            left: -250px; /* Initially, the left nav will be offscreen */
+            height: calc(100vh - 50px);
+            width: 250px;
+            background-color: var(--left-nav-color);
+            overflow-y: auto;
+            transition: left 0.3s ease; /* Add smooth transition */
+            z-index: 999;
+        }
+
+            .left-nav.active {
+                left: 0; /* When 'active' class is added, left nav will slide in */
+            }
+
+            .left-nav a {
+                color: white;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                padding: 10px 15px;
+                border-bottom: 1px solid #495057;
+            }
+
+                .left-nav a i {
+                    margin-right: 10px;
+                }
+
+                .left-nav a:hover {
+                    background-color: #495057;
+                }
+
+            .left-nav .logout-btn {
+                color: white;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                position: absolute;
+                bottom: 20px;
+                width: 100%;
+                padding: 10px 15px;
+                border-top: 1px solid #495057;
+            }
+
+        .main-content {
+            margin-left: 0;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+
+            .main-content.shift {
+                margin-left: 250px; /* When the left nav is active, push the main content */
+            }
+
+
+        /* Popup Styles */
+        .color-picker-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+            .color-picker-popup.active {
+                display: block;
+            }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+            .overlay.active {
+                display: block;
+            }
+
+        .popup-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .alert-container {
+            position: fixed;
+            top: 100px;
+            right: -100%; /* Initially hide off-screen */
+            z-index: 1050;
+            transition: right 0.5s ease-in-out; /* Slide-in effect */
+        }
+
+        .alert {
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 1rem;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Styles for different alert types */
+        .alert-success {
+            background-color: #28a745;
+        }
+
+        .alert-error {
+            background-color: #dc3545;
+        }
+
+        .alert-warning {
+            background-color: #ffc107;
+        }
+
+        /* Hide the notification after 5 seconds */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+        .emoji {
+            font-size: 20px; /* Size of the emoji */
+            display: inline-block;
+            animation: bounce 1s infinite, shake 0.5s infinite alternate; /* Apply both animations */
+            cursor: pointer;
+        }
+
+        /* Bounce animation */
+        @@keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* Shake animation */
+        @@keyframes shake {
+            0% {
+                transform: rotate(-10deg);
+            }
+
+            25% {
+                transform: rotate(10deg);
+            }
+
+            50% {
+                transform: rotate(-10deg);
+            }
+
+            75% {
+                transform: rotate(10deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        .emoji {
+            font-size: 20px;
+            display: inline-block;
+            animation: bounce 1s infinite, shake 0.5s infinite alternate;
+            cursor: pointer;
+        }
+        /* Bounce and Shake animations from your existing code */
+        @@keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes shake {
+            0% {
+                transform: rotate(-10deg);
+            }
+
+            25% {
+                transform: rotate(10deg);
+            }
+
+            50% {
+                transform: rotate(-10deg);
+            }
+
+            75% {
+                transform: rotate(10deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        #settingsIcon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 30px;
+            color: #007bff;
+            background-color: transparent;
+            text-decoration: none;
+            cursor: pointer;
+            z-index: 1000;
+            /* animation: rotateIcon 10s infinite linear; */
+        }
+
+        #theme-toggle {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            font-size: 30px;
+            color: #007bff;
+            background-color: transparent;
+            text-decoration: none;
+            cursor: pointer;
+            z-index: 1000;
+            /* animation: rotateIcon 10s infinite linear; */
+        }
+
+        #logout {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            font-size: 30px;
+            color: #007bff;
+            background-color: transparent;
+            text-decoration: none;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* Rotate the settings icon continuously */
+        @@keyframes rotateIcon {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #settingsIcon:hover {
+            color: #0056b3;
+        }
+
+       
+        .main-content {
+            margin-left: 0;
+        }
+
+        }
+
+        body {
+            background-color: white; /* White background */
+            color: black; /* Black text */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
+        }
+
+        .card {
+            background-color: white; /* White card background */
+            color: black; /* Black text */
+            border: 1px solid #ddd; /* Subtle border for light theme */
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+         .popup-overlay ,{
+            background-color: white; /* White card background */
+            color: black; /* Black text */
+            border: 1px solid #ddd; /* Subtle border for light theme */
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-theme {
+            background-color: #121212; /* Dark gray background */
+            color: white; /* White text for better contrast */
+        }
+
+            body.dark-theme .card, body.dark-theme .bill-container, body.dark-theme .table, body.dark-theme .popup-content, body.dark-theme .container {
+                background-color: #1e1e1e; /* Dark card background */
+                color: white; /* White text */
+                border: 1px solid #333; /* Subtle border for dark theme */
+            }
+
+            body.dark-theme .bill-container {
+                background-color: #1e1e1e; /* Dark card background */
+                color: white; /* White text */
+                border: 1px solid #333; /* Subtle border for dark theme */
+            }
+
+            body.dark-theme a {
+                color: #87CEEB; /* Light blue for links in dark mode */
+            }
+
+                body.dark-theme a:hover {
+                    color: #4aa8d8; /* Brighter blue on hover */
+                }
+
+        .table{
+        background-color: white; /* White card background */
+        color: black; /* Black text */
+        border: 1px solid #ddd; /* Subtle border for light theme */
+        transition: background-color 0.3s, color 0.3s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Notification Container -->
+    <div id="notification" class="alert-container">
+        <div id="notificationMessage" class="alert" role="alert">
+            <!-- Dynamic Message will be inserted here -->
+        </div>
+    </div>
+    <a href="#" id="theme-toggle" class="fa-solid fa-circle-half-stroke" title="Return to Dashboard"></a>
+
+<a href="../UserMaster/UserDashBoard" id="settingsIcon" class="fas fa-home" title="Return to Dashboard"></a>
+    <a href="../AdminMaster/Logout" id="logout" class="fas fa-sign-out-alt" title="Logout"></a>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div>
+            <span class="toggle-icon"><i class="fas fa-bars"></i></span>
+            <span class="title">ನಮ್ಮ ಮನೆ ಖರ್ಚು</span>
+        </div>
+        <div class="session-details">
+            Welcome, @Context.Session.GetString("UserName") !    <span class="emoji">😊</span>
+        </div>
+        <div>
+            <a href="../Login/Login" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+
+    </div>
+
+
+    <!-- Left Navigation -->
+    <div class="left-nav" id="leftNav">
+        <br />
+        <a href="../UserMaster/UserDashBoard"><i class="fas fa-chart-pie"></i> Dashboard</a>
+        <a href="../UserMaster/AddExpence"><i class="fas fa-money-bill-wave"></i> Add Expense</a>
+        <a href="../UserMaster/DownloadLastBill"><i class="fas fa-download"></i> Download Bill</a>
+        <a href="../UserMaster/GetExpenceReportDetaila"><i class="fas fa-file-alt"></i> Detailed Report</a>
+        <a href="../UserMaster/GetFamilyInfo"><i class="fas fa-users-cog"></i> Family Info</a>
+        <a href="../UserMaster/EditProfile"><i class="fas fa-person"></i> Edit Profile</a>
+
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        @RenderBody()
+
+    </div>
+ 
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+               const themeToggle = document.getElementById('theme-toggle');
+
+         const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.body.classList.add(savedTheme);
+        }
+
+         themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+
+            // Save the current theme in localStorage
+            if (document.body.classList.contains('dark-theme')) {
+                localStorage.setItem('theme', 'dark-theme');
+            } else {
+                localStorage.removeItem('theme');
+            }
+        });
+
+
+
+
+               $(document).ready(function () {
+            // Toggle left navigation
+            $('.toggle-icon').on('click', function () {
+                $('#leftNav').toggleClass('active');
+                $('#mainContent').toggleClass('shift');
+            });
+
+            // Show and hide color picker popup
+            $('#openColorPicker').on('click', function () {
+                $('#colorPickerPopup').addClass('active');
+                $('#overlay').addClass('active');
+            });
+
+                    var emojis = ['😊', '😎', '😂', '🤩','😉','😆']; // Array of 4 different emojis
+        var currentEmojiIndex = 0;
+
+        setInterval(function () {
+            $('.emoji').text(emojis[currentEmojiIndex]);
+            currentEmojiIndex = (currentEmojiIndex + 1) % emojis.length; // Loop through the emojis
+        }, 700);
+
+
+        });
+
+         if (localStorage.getItem("theme") === "dark") {
+            $("body").addClass("dark-theme");
+        }
+
+        
+
+              window.history.forward();
+        function noBack() {
+            window.history.forward();
+        }
+        window.onload = noBack;
+        window.onpageshow = function(evt) { if (evt.persisted) noBack(); }
+
+    </script>
+
+</body>
+
+</html>

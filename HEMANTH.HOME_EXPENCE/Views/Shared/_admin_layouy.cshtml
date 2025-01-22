@@ -1,0 +1,703 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1946/1946488.png" type="image/x-icon">
+    <title>
+        ನಮ್ಮ ಮನೆ ಖರ್ಚು
+    </title>
+    <style>
+        :root {
+            --top-nav-color: #343a40;
+            --left-nav-color: #212529;
+            --main-content-color: #f8f9fa;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--main-content-color);
+            transition: margin-left 0.3s;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--top-nav-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            z-index: 1000;
+        }
+
+
+
+            .top-nav .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .session-details {
+            font-size: 14px;
+        }
+
+
+        .left-nav {
+            position: fixed;
+            top: 50px; /* Below the top navigation */
+            bottom: 50px; /* Above the bottom bar */
+            left: -250px; /* Hidden by default */
+            width: 250px;
+            height: calc(100vh - 100px); /* Adjust for top and bottom bars */
+            background-color: var(--left-nav-color);
+            overflow-y: auto;
+            z-index: 1000; /* Below bottom bar */
+            transition: left 0.3s ease-in-out;
+        }
+
+.left-nav.active {
+    left: 0;  /* When 'active' class is added, left nav will slide in */
+}
+        .left-nav a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #495057;
+        }
+
+        .left-nav a i {
+            margin-right: 10px;
+        }
+
+        .left-nav a:hover {
+            background-color: #495057;
+        }
+
+        .left-nav .logout-btn {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            padding: 10px 15px;
+            border-top: 1px solid #495057;
+        }
+
+        .main-content {
+    margin-left: 0;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+
+        .main-content.shift {
+    margin-left: 250px; /* When the left nav is active, push the main content */
+}
+
+
+        /* Popup Styles */
+        .color-picker-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .color-picker-popup.active {
+            display: block;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .popup-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .alert-container {
+            position: fixed;
+            top: 100px;
+            right: -100%; /* Initially hide off-screen */
+            z-index: 1050;
+            transition: right 0.5s ease-in-out; /* Slide-in effect */
+        }
+
+        .alert {
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 1rem;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Styles for different alert types */
+        .alert-success {
+            background-color: #28a745;
+        }
+
+        .alert-error {
+            background-color: #dc3545;
+        }
+
+        .alert-warning {
+            background-color: #ffc107;
+        }
+
+        /* Hide the notification after 5 seconds */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+        .emoji {
+            font-size: 20px; /* Size of the emoji */
+            display: inline-block;
+            animation: bounce 1s infinite, shake 0.5s infinite alternate; /* Apply both animations */
+            cursor: pointer;
+        }
+
+        /* Bounce animation */
+        @@keyframes bounce {
+            0%
+
+        {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+
+        }
+
+        /* Shake animation */
+        @@keyframes shake {
+            0%
+
+        {
+            transform: rotate(-10deg);
+        }
+
+        25% {
+            transform: rotate(10deg);
+        }
+
+        50% {
+            transform: rotate(-10deg);
+        }
+
+        75% {
+            transform: rotate(10deg);
+        }
+
+        100% {
+            transform: rotate(0deg);
+        }
+
+        }
+
+        .emoji {
+            font-size: 20px;
+            display: inline-block;
+            animation: bounce 1s infinite, shake 0.5s infinite alternate;
+            cursor: pointer;
+        }
+        /* Bounce and Shake animations from your existing code */
+        @@keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes shake {
+            0% {
+                transform: rotate(-10deg);
+            }
+
+            25% {
+                transform: rotate(10deg);
+            }
+
+            50% {
+                transform: rotate(-10deg);
+            }
+
+            75% {
+                transform: rotate(10deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+/* 
+        #settingsIcon {
+            position: fixed;
+            bottom: 140px;
+            right: 5px;
+            font-size: 25px;
+            color: #007bff;
+            background-color: transparent;
+            text-decoration: none;
+            cursor: pointer;
+            z-index: 1000;
+            /* animation: rotateIcon 10s infinite linear; */
+       /*  }
+
+        #SwapLoginIcon {
+            position: fixed;
+            bottom: 80px;
+            right: 5px;
+            font-size: 25px;
+            color: #007bff;
+            background-color: transparent;
+            text-decoration: none;
+            cursor: pointer;
+            z-index: 1000;
+        } */
+
+        /* Rotate the settings icon continuously */
+        @@keyframes rotateIcon {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+      /*   #settingsIcon:hover {
+            color: #0056b3;
+        }
+
+        #logout {
+            position: fixed;
+            bottom: 20px;
+            right: 5px;
+            font-size: 25px;
+            color: #007bff;
+            background-color: transparent;
+            text-decoration: none;
+            cursor: pointer;
+            z-index: 1000;
+        } */
+
+/*         #openNav {
+            position: fixed;
+            bottom: 200px;
+            right: 5px;
+            font-size: 25px;
+            color: #007bff;
+            background-color: transparent;
+            text-decoration: none;
+            cursor: pointer;
+            z-index: 1000;
+        } */
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevents scrollbars from appearing */
+            background: #ffffff; /* Solid white background */
+            height: 100vh;
+            overflow: auto
+        }
+
+        /* Bubble background */
+        .bubble-background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Place bubbles behind main content */
+        }
+
+        /* Bubbles styling */
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            width: 40px; /* Increased size for balloon-like appearance */
+            height: 60px; /* Increased height for a more balloon shape */
+            background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+            background-size: 200% 200%;
+            border-radius: 50%; /* Balloon shape */
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+            animation: rise 10s infinite ease-in-out, shine 2s infinite linear;
+            /* Optional: Add a slight distortion effect for a more dynamic appearance */
+            transform-origin: center;
+        }
+
+        @@keyframes rise {
+            0%
+
+        {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(-100vh);
+            opacity: 0;
+        }
+
+        }
+
+        @@keyframes shine {
+            0%
+
+        {
+            background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+        }
+
+        50% {
+            background: linear-gradient(45deg, purple, pink, cyan, lime, blue);
+        }
+
+        100% {
+            background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+        }
+
+        }
+
+        @@media screen and (max-width: 767px) {
+            /* When screen width is less than 767px (mobile view) */
+            .left-nav {
+                position: fixed;
+                top: 50;
+                left: -250px; /* Initially offscreen */
+                height: 100vh;
+                width: 250px;
+                background-color: var(--left-nav-color);
+                z-index: 1000;
+            }
+
+                .left-nav.active {
+                    left: 0; /* Slide-in for mobile */
+                }
+            /* Make main content take full width on mobile */
+            .main-content {
+                margin-left: 0;
+            }
+
+                .main-content.shift {
+                    margin-left: 0; /* No left margin for mobile */
+                }
+            /* Hamburger Icon for Opening Nav */
+            /* Adjust nav links for mobile */
+            .left-nav a {
+                font-size: 16px; /* Smaller font size for mobile */
+            }
+        }
+
+        @@media screen and (max-width: 767px) {
+            #openNav {
+                display: block;
+            }
+        }
+
+
+
+        .main-content {
+            margin-top: 50px; /* Space for the top bar */
+            margin-bottom: 60px; /* Space for the bottom bar */
+            padding: 20px;
+        }
+
+        /* Bottom Navigation Bar */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            background-color: var(--top-nav-color);
+            color: white;
+            z-index: 1050; /* Ensure it is above the left navigation */
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+            .bottom-bar a {
+                text-decoration: none;
+                color: white;
+                text-align: center;
+                flex-grow: 1;
+                padding: 5px 0;
+            }
+
+                .bottom-bar a:hover {
+                    color: #007bff;
+                }
+
+            .bottom-bar i {
+                display: block;
+                font-size: 20px;
+                margin-bottom: 5px;
+            }
+
+            .bottom-bar span {
+                font-size: 12px;
+            }
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .bottom-bar span {
+                display: none; /* Hide text labels on smaller screens */
+            }
+
+            .bottom-bar i {
+                font-size: 24px; /* Adjust icon size */
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Notification Container -->
+    <div id="notification" class="alert-container">
+        <div id="notificationMessage" class="alert" role="alert">
+            <!-- Dynamic Message will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div>
+            <span class="toggle-icon"><i class="fas fa-bars"></i></span>
+            <span class="title">ನಮ್ಮ ಮನೆ ಖರ್ಚು</span>
+        </div>
+        <div class="session-details">
+            Welcome, @Context.Session.GetString("UserName") !    <span class="emoji">😊</span>
+        </div>
+       @*  <div>
+            <a href="../AdminMaster/Logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+            <i class="fas fa-cog" id="openColorPicker" style="cursor: pointer;"></i>
+        </div> *@
+
+    </div>
+
+    <!-- Left Navigation -->
+    <div class="left-nav" id="leftNav">
+<br />
+        <a href="../AdminMaster/AdminDashBoard"><i class="fas fa-house"></i>Dashborad</a>
+        <a href="../AdminMaster/ExpenseCategory"><i class="fas fa-list-alt"></i> Add Category</a>
+        <a href="../AdminMaster/FamilyDetails"><i class="fas fa-users"></i> Add Family</a>
+        @* <a href="../AdminMaster/ApprovalInbox"><i class="fas fa-inbox"></i> Approval Inbox</a> *@
+        <a href="../AdminMaster/AddFamilyMember"><i class="fas fa-user-plus"></i> Add Member</a>
+
+    </div>
+    <div class="bubble-background"></div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        @RenderBody()
+
+    </div>
+   
+
+
+
+    <!-- Color Picker Popup -->
+    <div class="color-picker-popup" id="colorPickerPopup">
+        <h5>Select Colors</h5>
+        <div>
+            <label for="topNavColor">Top Navigation Color:</label>
+            <input type="color" id="topNavColor" value="#343a40">
+        </div>
+        <div>
+            <label for="leftNavColor">Left Navigation Color:</label>
+            <input type="color" id="leftNavColor" value="#212529">
+        </div>
+        <div>
+            <label for="mainContentColor">Main Content Background:</label>
+            <input type="color" id="mainContentColor" value="#f8f9fa">
+        </div>
+        <div class="popup-buttons">
+            <button class="btn btn-primary" id="applyColors">Apply</button>
+            <button class="btn btn-secondary" id="closePopup">Cancel</button>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+
+        <a href="../UserMaster/UserDashBoard?UserId=@EncryptionHelper.UrlEncrypt(Context.Session.GetString("UserId"))"
+           id="SwapLoginIcon"
+           class="fa fa-exchange" ,
+           title="Swap Login"></a>
+        <a href="../AdminMaster/AdminDashBoard" title="Dashboard" id="settingsIcon" class="fas fa-home"> </a>
+        <a href="#" title="Nav Bar" id="openNav" class="fas fa fa-bars"></a>
+        <a href="../AdminMaster/Logout" title="Logout" id="logout" class="fas fa-sign-out-alt" title="Logout"></a>
+
+
+    </div>
+
+   
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <!-- Overlay -->    
+    <div class="overlay" id="overlay"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+           function createBubbles() {
+            const bubbleContainer = document.querySelector('.bubble-background');
+
+            // Get the height of the viewport to position bubbles starting from the middle
+            const viewportHeight = window.innerHeight;
+
+            for (let i = 0; i < 30; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+
+                // Randomize the size of the bubble
+                const size = Math.random() * 40 + 10;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+
+                // Position the bubble in the center horizontally and at the middle vertically
+                bubble.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+                bubble.style.bottom = `${Math.random() * viewportHeight / 2}px`; // Start from the middle of the screen
+
+                // Add a random animation delay to stagger the bubbles
+                bubble.style.animationDelay = `${Math.random() * 3}s`;
+
+                // Append the bubble to the container
+                bubbleContainer.appendChild(bubble);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', createBubbles);
+
+
+
+       $(document).ready(function () {
+    // Toggle left navigation
+    $('.toggle-icon, #openNav').on('click', function () {
+        $('#leftNav').toggleClass('active');
+        $('#mainContent').toggleClass('shift');
+    });
+
+    // Show and hide color picker popup
+    $('#openColorPicker').on('click', function () {
+        $('#colorPickerPopup').addClass('active');
+        $('#overlay').addClass('active');
+    });
+
+    $('#closePopup, #overlay').on('click', function () {
+        $('#colorPickerPopup').removeClass('active');
+        $('#overlay').removeClass('active');
+    });
+
+    // Apply color changes
+    $('#applyColors').on('click', function () {
+        const topNavColor = $('#topNavColor').val();
+        const leftNavColor = $('#leftNavColor').val();
+        const mainContentColor = $('#mainContentColor').val();
+
+        document.documentElement.style.setProperty('--top-nav-color', topNavColor);
+        document.documentElement.style.setProperty('--left-nav-color', leftNavColor);
+        document.documentElement.style.setProperty('--main-content-color', mainContentColor);
+
+        $('#colorPickerPopup').removeClass('active');
+        $('#overlay').removeClass('active');
+    });
+
+                        var emojis = ['😊', '😎', '😂', '🤩','😉','😆']; // Array of 4 different emojis
+        var currentEmojiIndex = 0;
+
+        setInterval(function () {
+            $('.emoji').text(emojis[currentEmojiIndex]);
+            currentEmojiIndex = (currentEmojiIndex + 1) % emojis.length; // Loop through the emojis
+        }, 700);
+
+                  window.history.forward();
+            function noBack() {
+                window.history.forward();
+            }
+            window.onload = noBack;
+            window.onpageshow = function(evt) { if (evt.persisted) noBack(); }
+
+});
+         function showNotification(type, message) {
+                    var notificationElement = $('#notification');
+                    var notificationMessageElement = $('#notificationMessage');
+
+                    // Set the message and alert type
+                    notificationMessageElement.text(message);
+
+                    // Add appropriate class for the type of notification
+                    notificationMessageElement.removeClass('alert-success alert-error alert-warning');
+                    notificationMessageElement.addClass('alert-' + type);
+
+                    // Slide in the notification from the right
+                    notificationElement.css('right', '20px'); // Slide-in effect
+
+                    // Fade out the notification after 5 seconds
+                    setTimeout(function () {
+                        notificationElement.addClass('fade-out');
+                        setTimeout(function () {
+                            notificationElement.css('right', '-100%'); // Slide-out effect
+                            notificationElement.removeClass('fade-out');
+                        }, 1000); // Delay for fade-out transition to finish
+                    }, 5000); // Notification stays for 5 seconds
+
+
+
+                }
+    </script>
+   
+</body>
+ 
+</html>

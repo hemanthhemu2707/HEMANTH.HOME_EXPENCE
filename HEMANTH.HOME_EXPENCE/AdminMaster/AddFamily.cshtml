@@ -1,0 +1,294 @@
+﻿@model HEMANTH.HOME_EXPENCE.Models.AdminMaster.Family.FamilyRequest
+@{
+    Layout = "~/Views/Shared/_admin_layouy.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Registration</title>
+    <!-- Include jQuery 3.5.1 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- Include jQuery UI 1.12.1 -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+    <!-- Include Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Include Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+            .form-step:first-child {
+                display: block;
+            }
+
+        .progress-navigation {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .nav-step {
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 50%;
+            font-weight: bold;
+            background-color: #ddd;
+            color: #333;
+            cursor: pointer;
+        }
+
+            .nav-step.active {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .nav-step.inactive {
+                background-color: #dc3545;
+                color: white;
+            }
+
+        .form-step input,
+        .form-step select,
+        .form-step textarea {
+            border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+        }
+
+        .form-step label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-step h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .form-container {
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+            .form-container h3 {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+        @@media (max-width: 768px) {
+            .form-container
+
+        {
+            margin: 10px;
+            box-shadow: none;
+        }
+
+        .progress-navigation {
+            font-size: 12px;
+        }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="form-container">
+            <h3>Family Registration Form</h3>
+            <form id="familyForm">
+                <!-- Step 1: Family Information -->
+                <div id="step1" class="form-step">
+                    <h2>Step 1: Family Information</h2>
+                    <div class="form-group">
+                        @Html.HiddenFor(x => x.FamilyId, new { name = "FamilyID", @class = "form-control", id = "FamilyID" })
+
+                        <label for="FamilyName">Family Name:</label>
+                        @Html.TextBoxFor(x => x.FamilyName, new { name = "FamilyName", @class = "form-control", id = "FamilyName" })
+                    </div>
+                    <div class="form-group">
+                        <label for="FamilyDesc">Description:</label>
+                        @Html.TextBoxFor(x => x.FamilyDesc, new { name = "FamilyDesc", @class = "form-control", id = "FamilyDesc" })
+                    </div>
+                    <div class="form-group">
+                        <label for="FamilyEntryDate">Entry Date:</label>
+                        @Html.TextBoxFor(x => x.FamilyEntryDate, new { name = "FamilyEntryDate", @class = "form-control", id = "FamilyEntryDate", type = "text" })
+                    </div>
+                    <button type="button" id="next1" class="btn btn-primary">Next</button>
+                </div>
+
+                <!-- Step 2: Home Information -->
+                <div id="step2" class="form-step">
+                    <h2>Step 2: Home Information</h2>
+                    <div class="form-group">
+                        <label for="HomeName">Home Name:</label>
+                        @Html.TextBoxFor(x => x.HomeName, new { name = "HomeName", @class = "form-control", id = "HomeName" })
+                    </div>
+                    <div class="form-group">
+                        <label for="FamilyLocation">Home Location:</label>
+                        @Html.TextBoxFor(x => x.FamilyLocation, new { name = "FamilyLocation", @class = "form-control", id = "FamilyLocation" })
+                    </div>
+                    <div class="form-group">
+                        <label for="FamilyEleBillNumber">Electric Bill Number:</label>
+                        @Html.TextBoxFor(x => x.FamilyEleBillNumber, new { name = "FamilyEleBillNumber", @class = "form-control", id = "FamilyEleBillNumber" })
+                    </div>
+                    <button type="button" id="prev2" class="btn btn-secondary">Back</button>
+                    <button type="button" id="next2" class="btn btn-primary">Next</button>
+                </div>
+
+                <!-- Step 3: Additional Information -->
+                <div id="step3" class="form-step">
+                    <h2>Step 3: Additional Information</h2>
+                    <div class="form-group">
+                        <label for="FamilyOwnerName">Owner Name:</label>
+                        @Html.TextBoxFor(x => x.FamilyOwnerName, new { name = "FamilyOwnerName", @class = "form-control", id = "FamilyOwnerName" })
+                    </div>
+                    <div class="form-group">
+                        <label for="FamilyMobileNumber">Owner Mobile Number:</label>
+                        @Html.TextBoxFor(x => x.FamilyMobileNumber, new { name = "FamilyMobileNumber", @class = "form-control", id = "FamilyMobileNumber" })
+                    </div>
+                    <div class="form-group">
+                        <label for="FamilyDoorNumber">Door Number:</label>
+                        @Html.TextBoxFor(x => x.DoorNumber, new { name = "DoorNumber", @class = "form-control", id = "FamilyDoorNumber" })
+                    </div>
+                    <div class="form-group">
+                        <label for="FamilyFloorNo">Floor Number:</label>
+                        @Html.TextBoxFor(x => x.FamilyFloorNo, new { name = "FamilyFloorNo", @class = "form-control", id = "FamilyFloorNo" })
+                    </div>
+                    <button type="button" id="prev3" class="btn btn-secondary">Back</button>
+                    <button type="button" id="submit" class="btn btn-success">Submit</button>
+                </div>
+            </form>
+
+            <!-- Navigation Progress -->
+            <div class="progress-navigation">
+                <span id="nav1" class="nav-step active">1</span>
+                <span id="nav2" class="nav-step">2</span>
+                <span id="nav3" class="nav-step">3</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+                  flatpickr("#FamilyEntryDate", {
+            dateFormat: "Y-m-d", // For internal value (ISO format)
+            altFormat: "d/m/Y",  // For displaying the date in dd/mm/yyyy
+            altInput: true,      // Enable alternative input field with formatted date
+            minDate: "1900-01-01", // Set the minimum date
+            maxDate: "2100-12-31", // Set the maximum date
+            allowInput: true     // Allow manual input along with the date picker
+        });
+
+            let currentStep = 1;
+
+            // Function to show the current step and update navigation progress
+            function showStep(step) {
+                $(".form-step").hide();
+                $("#step" + step).show();
+
+                $(".nav-step").removeClass("active").removeClass("inactive");
+                for (let i = 1; i <= 3; i++) {
+                    if (i < step) {
+                        $("#nav" + i).addClass("active");
+                    } else if (i > step) {
+                        $("#nav" + i).addClass("inactive");
+                    }
+                }
+            }
+
+            // Next and back button actions
+            $("#next1").click(function () {
+                currentStep = 2;
+                showStep(currentStep);
+            });
+
+            $("#prev2").click(function () {
+                currentStep = 1;
+                showStep(currentStep);
+            });
+
+            $("#next2").click(function () {
+                currentStep = 3;
+                showStep(currentStep);
+            });
+
+            $("#prev3").click(function () {
+                currentStep = 2;
+                showStep(currentStep);
+            });
+
+            // AJAX form submission
+        $("#submit").click(function () {
+            debugger;
+            const formData = {
+                FamilyName: $("#FamilyName").val(),
+                FamilyDesc: $("#FamilyDesc").val(),
+                FamilyEntryDate: new Date($("#FamilyEntryDate").val()).toISOString(),
+                HomeName: $("#HomeName").val(),
+                FamilyLocation: $("#FamilyLocation").val(),
+                FamilyEleBillNumber: parseInt($("#FamilyEleBillNumber").val(), 10),
+                FamilyOwnerName: $("#FamilyOwnerName").val(),
+                FamilyMobileNumber: $("#FamilyMobileNumber").val(),
+                FamilyDoorNumber: parseInt($("#FamilyDoorNumber").val(), 10),
+                FamilyFloorNo: parseInt($("#FamilyFloorNo").val(), 10),
+                FamilyId:$('#FamilyID').val()
+            };
+            console.log(formData);
+            $.ajax({
+                url: "/AdminMaster/AddFamily",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    console.log(response);
+                    if (response.status == 1) {
+                        alert(response.statusMessage);
+                        window.location.href = "../AdminMaster/FamilyDetails";
+                    } else {
+                        alert("Error: " + response.statusMessage);
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while submitting the form.");
+                }
+            });
+        });
+
+            // Initialize the form
+            showStep(currentStep);
+        });
+    </script>
+
+</body>
+
+</html>

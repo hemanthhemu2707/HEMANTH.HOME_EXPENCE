@@ -1,0 +1,545 @@
+﻿@model HEMANTH.HOME_EXPENCE.Models.Login.LoginRequest
+
+@{
+    Layout = null;
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <title>ನಮ್ಮ ಮನೆ ಕರ್ಚು</title>
+    <link rel="icon" type="image/x-icon" href="~/assets/images/home.png">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link href="~/assets/css/style.css" rel="stylesheet" />
+    <style>
+        /* Fix the body and prevent it from scrolling */
+
+
+/* Add scrolling to a specific content container */
+.scrollable-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: scroll; /* Allow vertical scrolling */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+
+        .popup-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .alert-container {
+            position: fixed;
+            top: 100px;
+            right: -100%; /* Initially hide off-screen */
+            z-index: 1050;
+            transition: right 0.5s ease-in-out; /* Slide-in effect */
+        }
+
+        .alert {
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 1rem;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Styles for different alert types */
+        .alert-success {
+            background-color: #28a745;
+        }
+
+        .alert-error {
+            background-color: #dc3545;
+        }
+
+        .alert-warning {
+            background-color: #ffc107;
+        }
+
+        /* Hide the notification after 5 seconds */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+
+        .animated-text {
+            animation: slideIn 2s ease-in-out;
+        }
+
+        @@keyframes slideIn {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Error message animation */
+        .error-message {
+
+            color: white;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        .error-message_loogin {
+            color: red;
+            background-color: navajowhite;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px !important;
+            margin-top: 10px;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        @@keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+
+        .login-wrap {
+            border: 2px solid transparent !important ; /* Base border */
+            border-radius: 15px !important; /* Rounded corners */
+            padding: 20px !important;
+            position: relative !important; /* Ensure animation doesn't affect layout */
+            animation: borderAnimation 3s infinite !important; /* Infinite animation */
+            background-clip: padding-box !important; /* Prevent gradient overlap with border */
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        @@keyframes borderAnimation {
+            0%
+
+        {
+            border-color: #f39c12; /* Start color */
+            box-shadow: 0 0 10px #f39c12;
+        }
+
+        50% {
+            border-color: #3498db; /* Middle color */
+            box-shadow: 0 0 15px #3498db;
+        }
+
+        100% {
+            border-color: #f39c12; /* End color (same as start) */
+            box-shadow: 0 0 10px #f39c12;
+        }
+
+        }
+
+
+        .animated-checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .animated-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            appearance: none; /* Hides the default checkbox */
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+            .animated-checkbox:checked {
+                background-color: #3498db;
+                border-color: #3498db;
+                transform: scale(1.2);
+                animation: bounce 0.5s ease;
+            }
+
+                /* Checkmark */
+                .animated-checkbox:checked::before {
+                    content: "✔";
+                    position: absolute;
+                    color: white;
+                    font-size: 16px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+
+        /* Label Animation */
+        .animated-label {
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .animated-checkbox:checked + .animated-label {
+            color: #3498db;
+            text-shadow: 0 0 5px #3498db;
+        }
+
+        /* Keyframe Animations */
+        @@keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes bounce {
+            0%, 100% {
+                transform: scale(1.2);
+            }
+
+            50% {
+                transform: scale(1.4);
+            }
+        }
+
+        @@media (max-width: 767px) {
+            .login-wrap
+
+        {
+            padding: 15px;
+        }
+
+        .heading-section {
+            font-size: 24px;
+        }
+
+        .login-wrap h3 {
+            font-size: 20px;
+        }
+
+        .form-control {
+            font-size: 14px;
+            padding: 12px 15px;
+        }
+
+        .error-message, .error-message_loogin {
+            font-size: 14px;
+        }
+
+        .popup-buttons {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        }
+
+
+        @@media (max-width: 768px) {
+            /* Fix the body and prevent it from scrolling */
+            body
+
+        {
+            position: fixed;
+            top: -60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden; /* Prevent body scroll */
+                background-size: cover; /* Ensure the background image covers the entire viewport */
+                background-position: center; /* Center the background image */
+                background-attachment: fixed; /* Keep the background fixed while content scrolls */
+                height: 100%; /* Ensure the background image takes full height */
+        }
+
+        /* Add scrolling to a specific content container */
+        .scrollable-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: scroll; /* Allow vertical scrolling */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        }
+
+    </style>
+</head>
+<body class="img js-fullheight" style=" height:100vh; background-image: url('@Url.Content("~/assets/images/bg_4.jpg")');">
+    <div id="notification" class="alert-container">
+        <div id="notificationMessage" class="alert" role="alert">
+            <!-- Dynamic Message will be inserted here -->
+        </div>
+    </div>
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center mb-5">
+                    <h1 class="heading-section">" ನಮ್ಮ ಮನೆ ಕರ್ಚು "</h1>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="login-wrap p-0">
+                        <h3 class="mb-4 text-center">Have an account?</h3>
+                        <form action="#" class="signin-form">
+                            <div class="form-group">
+                                @Html.TextBoxFor(mbox => mbox.UserName, new
+                                    {
+                                        @id = "username",
+                                        @class = "form-control",
+                                        @placeholder = "Enter username",
+                                                        style = "background-color:transparent"
+
+                                    })
+                                <div class="error-message" id="usernameError">Enter User Name !</div>
+
+                            </div>
+                            <div class="form-group">
+                                @Html.PasswordFor(mbox => mbox.Password, new
+                                    {
+                                        @id = "password",
+                                        @class = "form-control",
+                                        @placeholder = "Enter password",
+                                        style = "background-color:transparent"
+
+                                    })
+                                <span toggle="#password" id="passwordField" class="fa fa-fw fa-eye field-icon"></span>
+                                <div class="error-message" id="passwordError">Enter Password !</div>
+
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="loginBtn" class="form-control btn btn-primary submit px-3">Sign In</button>
+                            </div>
+                            <div class="form-group d-md-flex">
+                                <div class="w-50">
+                                 @*    <label class="checkbox-wrap checkbox-primary">
+                                        Admin Login ?
+                                        <input id="cb2" type="checkbox" style="font-size:20px !important; color:red">
+                                        <span class="checkmark"></span>
+                                    </label> *@
+                                    <div class="animated-checkbox-container">
+                                        <input type="checkbox" id="cb2" class="animated-checkbox">
+                                        <label for="joinFamily" class="animated-label">Admin Login ?</label>
+                                    </div>
+                                
+                                </div>
+                                <div class="w-50 text-md-center">
+                                    <a href="../Login/ForgotPassword" style="color: #fff">forgot password</a>
+                                </div>  
+
+                            </div>
+                            <div class="error-message_loogin" id="LoginError"></div>
+
+                            <div class="text-center">
+                                <a href="../Login/RegisterUser" style="color: #fff">Signup ? New User</a>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/popper.js"></script>
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/assets/js/main.js"></script>
+    <script>
+
+
+
+        $(document).ready(function () {
+
+                    $("#passwordField").click(function () {
+            var passwordField = $($(this).attr("toggle"));
+            var fieldType = passwordField.attr("type");
+
+            if (fieldType === "password") {
+                passwordField.attr("type", "text");
+                $(this).removeClass("fa-eye").addClass("fa-eye-slash");  
+            } else {
+                passwordField.attr("type", "password");
+                $(this).removeClass("fa-eye-slash").addClass("fa-eye");  
+            }
+        });
+
+
+        const images = [
+            '@Url.Content("~/assets/images/bg_4.jpg")',
+            '@Url.Content("~/assets/images/bg_3.jpg")',
+            '@Url.Content("~/assets/images/bg_2.jpg")',
+            '@Url.Content("~/assets/images/bg_5.jpg")'
+        ];
+                let currentIndex = 0;
+
+                setInterval(() => {
+                    $('body').css('background-image', `url(${images[currentIndex]})`);
+                    currentIndex = (currentIndex + 1) % images.length;
+                }, 3000); 
+
+
+        $('#loginBtn').on('click', function (e) {
+            e.preventDefault();
+
+            var username = $('#username').val();
+            var password = $('#password').val();
+            var isAdmin = $('#cb2').is(':checked');
+            var isValid = true;
+
+            // Username validation
+            if (username == "") {
+                $('#usernameError').fadeIn();
+                hideErrorMessage('#usernameError');
+                isValid = false;
+                return false;
+            }
+
+            // Password validation
+            if (password == "") {
+                $('#passwordError').fadeIn();
+                hideErrorMessage('#passwordError');
+                isValid = false;
+                return false;
+            }
+
+            if (isValid) {
+                var userType = isAdmin ? 1 : 0;
+
+                var _login = {
+                    UserName: username,
+                    Password: password,
+                    RoleType: userType
+                };
+
+                 var $button = $(this);
+        $button.prop('disabled', true);
+        $button.html('<span class="loading-spinner"></span> Please Wait...'); // Change button text to "Please Wait..." with a spinner
+
+
+                $.ajax({
+                    url: '/Login/Login',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(_login),
+                    success: function (response) {
+                        debugger
+                        console.log(response)
+                        if (response.roleType === 1 && response.status==1) {
+                                    window.location.href = `/AdminMaster/AdminDashBoard?UserId=`+response.encryptedUserId;
+                                }
+                        if (response.roleType === 0 && response.status==1) {
+                                
+                                    window.location.href = `/UserMaster/UserDashBoard?UserId=`+response.encryptedUserId;
+                                }
+                                if (response.status==1) {
+                            $('#LoginError').text(response.statusMessage);
+
+        $('#LoginError').fadeIn();
+                                hideErrorMessageLog('#LoginError');
+                        } else {
+                                 $('#LoginError').text(response.statusMessage)
+                                         $button.prop('disabled', false);
+                                         $button.html('Login');
+
+
+                             $('#LoginError').fadeIn();
+                             hideErrorMessage('#LoginError');
+                        }
+                    }
+                });
+            }
+        });
+
+        // Utility function to hide error messages after 3 seconds
+        function hideErrorMessage(selector) {
+            setTimeout(function () {
+                $(selector).fadeOut();
+            }, 3000);
+        }
+
+                  function hideErrorMessageLog(element) {
+            setTimeout(function () {
+                $(element).fadeOut();
+                window.location.reload();
+                           }, 5000); // Hides after 3 seconds
+        }
+
+        });
+
+         function showNotification(type, message) {
+             debugger
+                    var notificationElement = $('#notification');
+                    var notificationMessageElement = $('#notificationMessage');
+
+                    // Set the message and alert type
+                    notificationMessageElement.text(message);
+
+                    // Add appropriate class for the type of notification
+                    notificationMessageElement.removeClass('alert-success alert-error alert-warning');
+                    notificationMessageElement.addClass('alert-' + type);
+
+                    // Slide in the notification from the right
+                    notificationElement.css('right', '20px'); // Slide-in effect
+
+                    // Fade out the notification after 5 seconds
+                    setTimeout(function () {
+                        notificationElement.addClass('fade-out');
+                        setTimeout(function () {
+                            notificationElement.css('right', '-100%'); // Slide-out effect
+                            notificationElement.removeClass('fade-out');
+                        }, 1000); // Delay for fade-out transition to finish
+                    }, 5000); // Notification stays for 5 seconds
+                }
+
+    </script>
+
+</body>
+</html>
+

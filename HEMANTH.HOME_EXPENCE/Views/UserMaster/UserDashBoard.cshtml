@@ -1,0 +1,459 @@
+﻿@model HEMANTH.HOME_EXPENCE.Models.UserMaster.UserDashBoard.UserDashBoard
+@using System.Text.Json;
+@{
+    Layout = "~/Views/Shared/_user_layouy.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+            .card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            }
+
+        .icon-container {
+            font-size: 2.5rem;
+            color: #007bff;
+        }
+
+        .card-title, .count-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .bar-chart-container {
+            height: 300px;
+            width: 100%;
+        }
+
+        .dropdowns-container {
+            margin-top: 20px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+            .card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+        @@keyframes borderColorAnimation {
+            0%
+        {
+            border-color: #007bff;
+        }
+        25% {
+            border-color: #28a745;
+        }
+        50% {
+            border-color: #ffc107;
+        }
+
+        75% {
+            border-color: #dc3545;
+        }
+        100% {
+            border-color: #007bff;
+        }
+        }
+        .animated-border {
+            animation: borderColorAnimation 2s infinite;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%; /* Make it responsive */
+            max-width: 400px; /* Limit max width */
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+            .popup-content h3 {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+
+        .date-pickers {
+            display: flex;
+            flex-wrap: wrap; /* Ensure flexibility on smaller screens */
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+            .date-pickers .from-date,
+            .date-pickers .to-date {
+                flex: 1; /* Ensure fields share space equally */
+                min-width: 45%; /* Prevent input fields from being too small */
+            }
+
+        .popup-content input[type="date"] {
+            width: 100%; /* Full width for inputs */
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .popup-content button.go-btn {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 16px;
+            width: 100%; /* Full width for button */
+            margin-top: 15px;
+        }
+
+            .popup-content button.go-btn:hover {
+                background: #0056b3;
+            }
+
+        /* Media Query for Smaller Screens */
+        @@media (max-width: 480px) {
+            .popup-content
+
+        {
+            padding: 15px;
+        }
+
+        .popup-content h3 {
+            font-size: 16px;
+        }
+
+        .date-pickers .from-date,
+        .date-pickers .to-date {
+            min-width: 100%; /* Stack fields vertically */
+        }
+
+        .popup-content button.go-btn {
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-overlay" id="popup">
+        <div class="popup-content">
+            <h3>Select Date Range</h3>
+            <div class="date-pickers">
+                <div class="from-date">
+                    <label for="fromDate">From Date:</label>
+                    <input type="date" id="fromDate" placeholder="From date" />
+                </div>
+                <div class="to-date">
+                    <label for="toDate">To Date:</label>
+                    <input type="date" id="toDate" placeholder="To date" />
+                </div>
+            </div>
+            <button class="go-btn">
+                Go <i class="fa fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <div class="text-center mb-4">
+            <h3>Welcome, @Model.UserName !</h3>
+            <h3><b>"@Model.FamilyName</b>"</h3>
+            <h5 class="text-muted">Your Expense on this Current Month</h5>
+            <div class="row mt-3">
+                <div class="col-6">
+                    <div class="card p-3 shadow-sm" style="border-width:2px !important;">
+                        <h5 class="card-title">Personal Expense</h5>
+                        <p class="count-number">
+                            <span class="rs-icon">₹</span>
+                            <span id="personal-expense-count">0</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card p-3 shadow-sm">
+                        <h5 class="card-title">Family Expense</h5>
+                        <p class="count-number">
+                            <span class="rs-icon">₹</span>
+                            <span id="family-expense-count">0</span>
+                        </p>
+                    </div>
+                </div>
+              
+
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <a href="../UserMaster/AddExpence" class="text-decoration-none">
+                    <div class="card p-3 shadow-sm text-center">
+                        <div class="icon-container mb-2">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <h5 class="card-title">Add Expense</h5>
+                        <p class="text-muted"> View Details</p>
+                        
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="#" id="openPopup" class="text-decoration-none">
+                    <div class="card p-3 shadow-sm text-center">
+                        <div class="icon-container mb-2">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h5 class="card-title">Download Last Bill</h5>
+                        <p class="text-muted">Month: <span id="last-bill-month"></span></p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="../UserMaster/GetExpenceReportDetaila" class="text-decoration-none">
+                    <div class="card p-3 shadow-sm text-center">
+                        <div class="icon-container mb-2">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h5 class="card-title">View Report</h5>
+                        <p class="text-muted"> View Details</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="../UserMaster/GetFamilyInfo" class="text-decoration-none">
+                    <div class="card p-3 shadow-sm text-center">
+                        <div class="icon-container mb-2">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5 class="card-title">Family Info</h5>
+                        <p class="text-muted">Members: <span id="family-members-count">0</span></p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Year and Month Selection -->
+        <div class="dropdowns-container text-center">
+            <label for="year-select" class="me-2">Select Year:</label>
+            <select id="year-select" class="form-select d-inline-block w-auto">
+                <!-- Options populated dynamically -->
+            </select>
+            <label for="month-select" class="ms-4 me-2">Select Month:</label>
+            <select id="month-select" class="form-select d-inline-block w-auto">
+                <!-- Options populated dynamically -->
+            </select>
+        </div>
+
+        <!-- Bar Chart Section -->
+        <div class="mt-4">
+            <canvas id="bar-chart" class="bar-chart-container"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const openPopupBtn = document.getElementById('openPopup');
+            const popup = document.getElementById('popup');
+            const yearSelector = document.getElementById('yearSelector');
+            const monthSelector = document.getElementById('monthSelector');
+            const goBtn = document.querySelector('.go-btn');
+
+            // Get current date details
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth(); // Month is 0-based
+
+            // Month names
+            const months = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            const defaultMonthIndex = currentMonth === 0 ? 11 : currentMonth - 1; // Handle January case
+            const defaultYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+           
+            openPopupBtn.addEventListener('click', () => {
+                popup.style.display = 'block';
+            });
+
+            popup.addEventListener('click', (e) => {
+                if (e.target === popup) {
+                    popup.style.display = 'none';
+                }
+            });
+
+            goBtn.addEventListener('click', () => {
+                const fromDate = $('#fromDate').val();
+                const toDate = $('#toDate').val();
+
+                if (!fromDate || !toDate) {
+                    alert("Please select both year and month!");
+                    return false;
+                }
+                const url = `../UserMaster/DownloadLastBill?fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(toDate)}`;
+    window.location.href = url;
+            });
+        });
+
+        $(document).ready(function () {
+
+        flatpickr("#fromDate", {
+            dateFormat: "Y-m-d",
+            altFormat: "d/m/Y",
+            altInput: true,
+            minDate: "1900-01-01",
+            maxDate: "today", 
+            allowInput: true,
+            onChange: function (selectedDates, dateStr, instance) {
+                if (dateStr) {
+                    toDatePicker.set('minDate', dateStr); 
+                }
+            }
+        });
+
+
+        const toDatePicker = flatpickr("#toDate", {
+            dateFormat: "Y-m-d",
+            altFormat: "d/m/Y",
+            altInput: true,
+            minDate: "1900-01-01",
+            maxDate: "today", 
+            allowInput: true
+        });
+
+
+
+                 const currentDate = new Date();
+        const previousMonthDate = new Date(currentDate.setMonth(currentDate.getMonth() - 1));
+        const previousMonthName = previousMonthDate.toLocaleString('default', { month: 'long' });
+
+        // Display the previous month in the "Download Last Bill" card
+        $('#last-bill-month').text(previousMonthName);
+
+
+           const personalExpense = @Model.PersonalExpence;
+        const familyExpense = @Model.FamilyExpence;
+        const monthlyData = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyExpenses));
+                        const personalExpenses = monthlyData.map(d => d.Personal);
+        const familyExpenses = monthlyData.map(d => d.Family);
+
+            const familyMembersCount = @Model.FamilMembersCount;
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+
+               function animateCounter(id, start, end, duration, callback) {
+            const element = $(`#${id}`);
+            let current = start;
+            const increment = (end - start) / (duration / 10);
+            const interval = setInterval(() => {
+                current += increment;
+                if (current >= end) {
+                    current = end;
+                    clearInterval(interval);
+                    if (callback) callback(); // Execute callback after animation completes
+                }
+                element.text(Math.floor(current));
+            }, 10);
+        }
+        animateCounter("personal-expense-count", 0, personalExpense, 2000, () => {
+            $("#personal-expense-count").closest(".card").addClass("animated-border");
+        });
+        animateCounter("family-expense-count", 0, familyExpense, 2000, () => {
+            $("#family-expense-count").closest(".card").addClass("animated-border");
+        });
+        animateCounter("family-members-count", 0, familyMembersCount, 2000);
+        for (let i = currentYear - 10; i <= currentYear + 10; i++) {
+            $('#year-select').append(new Option(i, i));
+        }
+        $('#year-select').val(currentYear);
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        months.forEach(month => $('#month-select').append(new Option(month, month)));
+        $('#month-select').val(currentMonth);
+               const ctx = document.getElementById('bar-chart').getContext('2d');
+        const labels = monthlyData.map(d => d.Month);
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Personal Expense',
+                        data: personalExpenses,
+                        backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                        borderColor: '#007bff',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Family Expense',
+                        data: familyExpenses,
+                        backgroundColor: 'rgba(40, 167, 69, 0.5)',
+                        borderColor: '#28a745',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        $('#year-select, #month-select').on('change', function () {
+            console.log($('#year-select').val(), $('#month-select').val());
+        });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,953 @@
+﻿@model HEMANTH.HOME_EXPENCE.Models.Login.LoginRequest
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ನಮ್ಮ ಮನೆ ಕರ್ಚು</title>
+    <link rel="icon" type="image/x-icon" href="~/assets/images/home.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        .login-box {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+        }
+
+        body, html {
+            height: auto;
+            padding: 0;
+            width: 100%;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('images\back_.jpg');
+            background-size: cover; /* Ensures the image covers the entire viewport */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+        }
+
+        .animated-text {
+            animation: slideIn 2s ease-in-out;
+        }
+
+        @@media (max-width: 600px) {
+            .form-container {
+                padding: 15px;
+            }
+
+                .form-container button {
+                    font-size: 14px;
+                }
+        }
+
+        @@keyframes slideIn {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .error-message {
+            color: white;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        .error-message_registration {
+            color: red;
+            font-weight: bold;
+            background-color: navajowhite;
+            text-align: center;
+            font-size: 16px !important;
+            margin-top: 10px;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        @@keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .btn-block {
+            animation: bounce 0.5s ease;
+        }
+
+        @@keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        @@media (max-width: 767px) {
+            .login-box {
+                padding: 20px;
+            }
+        }
+
+        p {
+            font-family: sans-serif;
+            font-size: 10pt;
+            color: #333;
+        }
+
+        label.toggle {
+            width: 50px;
+            height: 30px;
+            background-color: #bbb;
+            display: inline-block;
+            border-radius: 15px;
+            box-sizing: border-box;
+            padding: 0;
+            transition: background-color 0.3s 0.4s;
+        }
+
+            label.toggle input {
+                width: 0;
+                height: 0;
+            }
+
+        label > input[type="checkbox"] {
+            margin: 0;
+        }
+
+            label > input[type="checkbox"]::before {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background-color: #ddd;
+                content: "";
+                line-height: 0;
+                padding: 0;
+                display: inline-block;
+                margin-top: 3px;
+                margin-left: 3px;
+                transition: margin-left 0.4s ease-in-out, background-color 0.4s 0.3s;
+            }
+
+        label:has(> input:checked) {
+            background-color: #76c276 !important;
+        }
+
+        label > input[type="checkbox"]:checked::before {
+            background-color: #fff;
+            margin-left: 23px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3; /* Light gray background */
+            border-top: 4px solid #3498db; /* Blue spinner color */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-wrap {
+            border: 2px solid transparent !important; /* Base border */
+            border-radius: 15px !important; /* Rounded corners */
+            padding: 20px !important;
+            position: relative !important; /* Ensure animation doesn't affect layout */
+            animation: borderAnimation 3s infinite !important; /* Infinite animation */
+            background-clip: padding-box !important; /* Prevent gradient overlap with border */
+            /* width:100% !important; */
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        @@keyframes borderAnimation {
+            0% {
+                border-color: #f39c12; /* Start color */
+                box-shadow: 0 0 10px #f39c12;
+            }
+
+            50% {
+                border-color: #3498db; /* Middle color */
+                box-shadow: 0 0 15px #3498db;
+            }
+
+            100% {
+                border-color: #f39c12; /* End color (same as start) */
+                box-shadow: 0 0 10px #f39c12;
+            }
+        }
+
+        .form-control {
+            background: transparent;
+            border: 1px solid #ccc;
+            border-radius: 19px;
+            color: #fff; /* Adjust as per design */
+            font-size: 16px;
+            height: 40px;
+            padding: 10px 15px;
+            transition: background 0.3s, border 0.3s;
+            width: 100% !important;
+        }
+
+            .form-control:focus {
+                outline: none;
+                background: rgba(255, 255, 255, 0.1);
+                border-color: #007bff;
+            }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 16px;
+            color: white;
+            transition: 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .form-control:focus + .form-label,
+        .form-control:not(:placeholder-shown) + .form-label {
+            top: -10px;
+            left: 10px;
+            font-size: 16px;
+            color: #007bff;
+            display: none;
+        }
+
+        button {
+            border-radius: 0;
+        }
+
+            button:focus {
+                outline: 1px dotted;
+                outline: 5px auto -webkit-focus-ring-color;
+            }
+
+        input, button, select, optgroup, textarea {
+            margin: 0;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+        }
+
+        button,
+        input {
+            overflow: visible;
+        }
+
+        button,
+        select {
+            text-transform: none;
+        }
+
+        .animated-checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .animated-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            appearance: none; /* Hides the default checkbox */
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+            .animated-checkbox:checked {
+                background-color: #3498db;
+                border-color: #3498db;
+                transform: scale(1.2);
+                animation: bounce 0.5s ease;
+            }
+
+                .animated-checkbox:checked::before {
+                    content: "✔";
+                    position: absolute;
+                    color: white;
+                    font-size: 16px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+
+        .animated-label {
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .animated-checkbox:checked + .animated-label {
+            color: #3498db;
+            text-shadow: 0 0 5px #3498db;
+        }
+
+        @@keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes bounce {
+            0%, 100% {
+                transform: scale(1.2);
+            }
+
+            50% {
+                transform: scale(1.4);
+            }
+        }
+
+        #familyRefContainer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .verify-btn {
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: green;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+            .verify-btn:active {
+                background-color: darkgreen;
+            }
+
+        .validating {
+            animation: validating 1s infinite;
+        }
+
+        @@keyframes validating {
+            0%, 100% {
+                transform: scale(1);
+                background-color: green;
+            }
+
+            50% {
+                transform: scale(1.1);
+                background-color: lightgreen;
+            }
+        }
+
+        .verify-container {
+        }
+
+        .verify-btn {
+            display: none;
+            margin-top: 20px;
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease;
+        }
+
+            .verify-btn.verified {
+                background-color: #28a745;
+                color: #fff;
+                transform: scale(1.1);
+            }
+
+        .verify-icon {
+            animation: bounce 1s infinite;
+        }
+
+        @@keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .btn {
+            height: 40px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .otp-input {
+            width: 22%;
+            margin-left: 2px;
+            display: inline-block;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            margin-right: 5px;
+            font-size: 16px;
+            color: white;
+            background-color: transparent;
+        }
+
+            .otp-input:last-child {
+                margin-right: 0;
+            }
+
+        @@media (max-width: 768px) {
+            .otp-input {
+                width: 22%;
+                margin-right: 3px;
+            }
+
+            .form-control, .btn {
+                font-size: 14px;
+            }
+
+            h1, h3 {
+                font-size: 20px;
+            }
+
+            .login-wrap {
+                padding: 15px;
+            }
+        }
+
+    </style>
+</head>
+<body class="img js-fullheight" style="  background-image: url('@Url.Content("~/assets/images/home-back.jpg")');">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="login-wrap p-0">
+                    <center>
+                        <h3 class="heading-section" style="color:white">" ನಮ್ಮ ಮನೆ ಕರ್ಚು "</h3>
+                        <h3 class="mb-4 text-center" style="color:white">Not ? Have an account?</h3>
+                    </center>
+                    @Html.HiddenFor(x => x.isAdmin, new { id = "hiddenAdminStatus", style = "display:none" })
+
+                    <form id="registrationForm" class="signin-form" method="POST">
+                        <div class="form-group">
+                            @Html.TextBoxFor(mbox => mbox.UserName, new
+                                {
+                                    @id = "username",
+                                    @class = "form-control",
+                                    placeholder = " "
+                                })
+                            <label for="username" class="form-label">Username</label>
+                            <div class="error-message" id="usernameError">Please enter your username.</div>
+                        </div>
+
+                        <div class="form-group">
+                            @* <div class="input-container" style="display: flex; align-items: center;"> *@
+
+                            @Html.TextBoxFor(mbox => mbox.UserEmail, new
+                                {
+                                    @id = "email",
+                                    @class = "form-control",
+                                    placeholder = " "
+                                })
+
+                            <label for="email" class="form-label">Email Address</label>
+
+
+
+                            <div class="error-message" id="emailError">Please enter a valid email address.</div>
+
+                        </div>
+                        @*       <div class="verify-container" style="width:100%;">
+                                <center>
+                                    <button type="button" id="verifyBtn" style="text-align:center" class="btn btn-primary verify-btn">
+                                        <i class="fas fa-envelope verify-icon"></i> Verify Email
+                                    </button>
+                                </center>
+                            </div> *@
+                        @* </div> *@
+
+                        <div class="form-group">
+                            @Html.TextBoxFor(mbox => mbox.UserPhoneNumber, new
+                                {
+                                    @id = "phone",
+                                    @class = "form-control",
+                                    placeholder = " "
+                                })
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <div class="error-message" id="phoneError">Please enter your phone number.</div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.PasswordFor(mbox => mbox.Password, new
+                                {
+                                    @id = "password",
+                                    @class = "form-control",
+                                    placeholder = " "
+                                })
+                            <label for="password" class="form-label">Password</label>
+                            <div class="error-message" id="passwordError">Please enter your password.</div>
+                        </div>
+                        <div class="animated-checkbox-container">
+                            <input type="checkbox" id="joinFamily" class="animated-checkbox">
+                            <label for="joinFamily" class="animated-label">Join to the Family</label>
+                        </div>
+                        <div class="animated-checkbox-container">
+                            <input type="checkbox" id="createFamily" class="animated-checkbox">
+                            <label for="createFamily" class="animated-label">Create a Family</label>
+                        </div>
+                        <div id="familyRefContainer" class="form-group" style="display: none; flex-direction: row; align-items: center; gap: 10px;">
+                            @Html.TextBoxFor(mbox => mbox.AccessKey, new
+                                {
+                                    @id = "familyRefId",
+                                    @class = "form-control",
+                                    placeholder = " "
+                                })
+                            <label for="familyRefId" class="form-label">Family Ref ID</label>
+                            <input type="button" class="btn-success verify-btn" value="Verify" />
+                        </div>
+
+                        <div class="form-group" id="divVerifyEmail" style="display:none">
+                            <div class="form-group">
+                                <h4 style="text-align:center;color:white">Verify You Email</h4>
+
+                                <button type="button" id="sendOtpBtn" class="btn btn-primary btn-block w-100">
+                                    Send OTP
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group otp-section" style="display: none;">
+                            <div class="d-flex justify-content-between">
+                                <input type="text" maxlength="1" class="otp-input" id="otp1">
+                                <input type="text" maxlength="1" class="otp-input" id="otp2">
+                                <input type="text" maxlength="1" class="otp-input" id="otp3">
+                                <input type="text" maxlength="1" class="otp-input" id="otp4">
+                            </div>
+                            <br />
+
+                            <button type="button" id="verifyOtpBtn" class="form-control btn btn-success mt-3">Verify OTP</button>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="Button" class="btn btn-primary btn-block w-100" id="registerBtn">Request to Create User</button>
+                            <center> <a href="../Login/Login">SignIn / Login </a></center>
+
+                            <div class="error-message_registration" id="registrationError"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/popper.js"></script>
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/assets/js/main.js"></script>
+    <script>
+                $(document).ready(function () {
+
+                            $("#registerBtn").hide();
+
+                    //  $('#email').on('input', function () {
+                    //     const emailValue = $(this).val();
+                    //     if (emailValue.trim() !== '') {
+                    //         $('#verifyBtn').fadeIn();
+                    //                                      $('#registerBtn').hide();
+
+                    //     } else {
+                    //         $('#verifyBtn').fadeOut();
+                    //                                      $('#registerBtn').show();
+                    //     }
+                    // });
+
+                     $('#verifyBtn').on('click', function () {
+                        $(this).addClass('verified').html('<i class="fas fa-check-circle"></i> Verifing..');
+                    });
+
+
+                     $('#joinFamily').on('change', function () {
+                    if ($(this).is(':checked')) {
+                                     $('#registerBtn').hide();
+                        $('#familyRefContainer').show();
+                        $('#createFamily').prop('disabled', true);
+                                                $("#divVerifyEmail").show();
+
+                    } else {
+                        $('#familyRefContainer').hide();
+                        $('#createFamily').prop('disabled', false);
+                    }
+                });
+
+                      var userAcess=@Model.EmilThroghLogin;
+                              if(userAcess>0)
+                              {
+                                                          $('#email').css('background-color','transparent');
+                                                                  $('#createFamily').prop('disabled', true);
+                                        $('#registerBtn').show();
+                                                    $('#joinFamily').prop('checked', true).prop('disabled', true);
+                                        $('#email').prop('disabled', true);
+                                                                $('#familyRefContainer').show();
+                                                                        $("#registerBtn").text('Join Family');
+                                                                                                        $('#familyRefId').prop('disabled', true).css('background-color','transparent');
+
+                              }
+
+
+
+                    $(".verify-btn").click(function () {
+                    const button = $(this);
+                    button.addClass("validating");
+                    setTimeout(function () {
+                        button.removeClass("validating");
+                        alert("Validation Complete!");
+                         $('#registerBtn').show();
+                                         $(this).addClass('verified').html('<i class="fas fa-check-circle"></i> Verified.');
+
+                    }, 3000); // Animation duration: 3 seconds
+                });
+
+
+
+                $('#createFamily').on('change', function () {
+                    if ($(this).is(':checked')) {
+                        $('#joinFamily').prop('disabled', true).prop('checked', false);
+                        $('#familyRefContainer').hide();
+                                        $('#registerBtn').hide();
+
+                        $('#hiddenAdminStatus').val(1);
+
+                        $("#divVerifyEmail").show();
+
+                    } else {
+                                        $("#divVerifyEmail").hide();
+
+                                                        $('#registerBtn').show();
+
+                        $('#joinFamily').prop('disabled', false);
+                    }
+
+
+
+                });
+
+
+                $('#phone').on('keypress', function (e) {
+                    var charCode = e.which ? e.which : e.keyCode;
+                    var currentValue = $(this).val();
+                    if (charCode < 48 || charCode > 57) {
+                        e.preventDefault();
+                    }
+                    if (currentValue.length === 0 && ![54, 55, 56, 57].includes(charCode)) {
+                        e.preventDefault();
+                    }
+                     if (currentValue.length >= 10) {
+                    e.preventDefault();
+                }
+                });
+
+
+
+                               $('#registerBtn').on('click', function (e) {
+                        e.preventDefault();
+        var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+        var username = $('#username').val();
+                        var email = $('#email').val();
+                        var phone = $('#phone').val();
+                        var password = $('#password').val();
+                        var isValid = true;
+                        if (username == "") {
+                            $('#usernameError').fadeIn();
+                            hideErrorMessage('#usernameError');
+                            isValid = false;
+                            return false;
+                        }
+                        if (email == "") {
+                            $('#emailError').fadeIn();
+                            hideErrorMessage('#emailError');
+                            isValid = false;
+                            return false;
+                                }
+                              else if (!emailRegex.test(email)) {
+                            $('#emailError').text("Enter a valid email address").fadeIn();
+                            hideErrorMessage('#emailError');
+                            isValid = false;
+                        }
+                             if($('#joinFamily').is(':checked')==false && $('#createFamily').is(':checked')==false)
+                                                {
+                                                              alert("Please Select the Checkbox option ");
+                                    isValid = false;
+                                                }
+                        if (phone == "") {
+                            $('#phoneError').fadeIn();
+                            hideErrorMessage('#phoneError');
+                            isValid = false;
+                            return false;
+                        }
+                        if (password == "") {
+                            $('#passwordError').fadeIn();
+                            hideErrorMessage('#passwordError');
+                            isValid = false;
+                            return false;
+                        }
+
+                        if (isValid) {
+                            if($('#joinFamily').is(':checked') && $('#familyRefId').val())
+                            {
+        userAcess = 1
+                            }
+
+                            var _registration = {
+                                UserName: username,
+                                UserEmail: email,
+                                UserPhoneNumber: phone,
+                                Password: password,
+                                isAdmin:$("#hiddenAdminStatus").val(),
+                                                EmilThroghLogin:userAcess,
+                                                                AccessKey:$('#familyRefId').val()
+                            };
+                             var $button = $(this);
+                $button.prop('disabled', true);
+                $button.html('<span class="loading-spinner"></span> Please Wait...'); // Change button text to "Please Wait..." with a spinner
+
+
+                            $.ajax({
+                                url: '/Login/RegisterUser',
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(_registration),
+                                success: function (response) {
+
+                                    if (response.status == 1) {
+                                        $('#registrationError').text(response.statusMessage);
+                                        $('#registrationError').fadeIn();
+                                        hideErrorMessageLog('#registrationError');
+                                    } else {
+                                         $button.prop('disabled', false);
+                        $button.html('Register');
+                                        $('#registrationError').text(response.statusMessage);
+                                        $('#registrationError').fadeIn();
+                                        hideErrorMessage('#registrationError');
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                     $button.prop('disabled', false);
+                        $button.html('Register');
+                                              $('#registrationError').text('Something went wrong, please try again.');
+                                          $('#registrationError').fadeIn();
+                                        hideErrorMessage('#registrationError');
+                                }
+                            });
+                        }
+                    });
+
+
+                           function disableButton(button, text) {
+                        $(button).prop('disabled', true).html(`<span class="spinner-border spinner-border-sm"></span> ${text}`);
+                    }
+
+                    function enableButton(button, text) {
+                        $(button).prop('disabled', false).html(text);
+                    }
+
+
+
+                         $('#sendOtpBtn').on('click', function () {
+                            const email = $('#email').val();
+                                                                var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+                            if (!email) {
+                                $('#emailError').fadeIn().delay(3000).fadeOut();
+                                return;
+                            }
+
+
+                                    if (!emailRegex.test(email)) {
+                                    $('#emailError').text("Enter a valid email address").fadeIn();
+                                    hideErrorMessage('#emailError');
+                                    isValid = false;
+                                                                    return;
+
+                                }
+                                                                if($('#joinFamily').is(':checked')==false && $('#createFamily').is(':checked')==false)
+                                                        {
+                                                                      alert("Please Select the Checkbox option ");
+                                            isValid = false;
+                                                        }
+                                                        else
+                                                        {
+                            disableButton('#sendOtpBtn', 'Sending...');
+                    $.ajax({
+                url: '@Url.Action("GenerateOTP", "Login")',
+                                method: 'POST',
+                                                        data: { email: email , isJoiningFamily:$('#joinFamily').is(':checked')},
+                        success: function (response) {
+                            if (response.success) {
+                                otp=response.otp;
+                    $('#sendOtpBtn').html('<span class="fa fa-check-circle"></span> Sent');
+
+                                $('.otp-section').slideDown();
+
+                            } else {
+                                if(response.message!=null)
+                                {
+                                    alert(response.message);
+                                }else
+                                {
+
+                                alert('Email not found!');
+                                }
+                                                                        enableButton('#sendOtpBtn', 'Send OTP');
+
+                            }
+                        },
+                        error: function () {
+                            alert('Error while sending OTP!'); setTimeout(() => {
+                                $('.otp-section').slideDown();
+                                enableButton('#sendOtpBtn', 'Send OTP');
+                            }, 2000);
+
+                        }
+
+                    });
+                            }
+                        });
+
+ $('.otp-input').on('input', function () {
+                const value = $(this).val();
+                if (!/^\d$/.test(value)) {
+                    $(this).val(''); // Clear invalid input
+                    return;
+                }
+                if (value && $(this).next('.otp-input').length) {
+                    $(this).next('.otp-input').focus();
+                }
+            });
+
+            $('.otp-input').on('keydown', function (e) {
+                const key = e.key;
+
+                if (key === 'Backspace') {
+                    if (!$(this).val() && $(this).prev('.otp-input').length) {
+                        $(this).prev('.otp-input').focus().val('');
+                    }
+                } else if (!/^\d$/.test(key) && key !== 'Backspace' && key !== 'ArrowLeft' && key !== 'ArrowRight') {
+                    e.preventDefault();
+                }
+            });
+
+            $('.otp-input').on('click', function () {
+                $(this).select();
+            });
+
+                        $('#verifyOtpBtn').on('click', function () {
+                             const otpInp = $('#otp1').val() + $('#otp2').val() + $('#otp3').val() + $('#otp4').val();
+
+                                    if (otp.length !== 4) {
+                        alert('Please enter a valid OTP!');
+                        return;
+                    }
+                            disableButton('#verifyOtpBtn', 'Verifying...');
+
+                            if(otpInp==otp){
+                    setTimeout(function () {
+                               $('.new-password-section').slideDown();
+                                       $('#verifyOtpBtn').html('<span class="fa fa-check-circle"></span> Verifyed..');
+                                                         $('#registerBtn').show();
+
+                           }, 2000);
+
+                            } else {
+                                alert('Invalid OTP!');
+                                        $('#verifyOtpBtn').html('<span class="fa fa-check-circle"></span> Sent');
+
+                                                    enableButton('#verifyOtpBtn', 'Veify OTP');
+
+                            }
+                    });
+
+
+
+
+                    function hideErrorMessage(element) {
+                        setTimeout(function () {
+                            $(element).fadeOut();
+                        }, 3000); // Hides after 3 seconds
+                    }
+
+                      function hideErrorMessageLog(element) {
+                        setTimeout(function () {
+                            $(element).fadeOut();
+                            window.location.href="../Login/Login";
+                        }, 5000); // Hides after 3 seconds
+                    }
+
+
+                });
+    </script>
+</body>
+</html>

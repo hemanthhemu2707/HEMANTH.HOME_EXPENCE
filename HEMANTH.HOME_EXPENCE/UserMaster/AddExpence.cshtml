@@ -1,0 +1,606 @@
+﻿@model HEMANTH.HOME_EXPENCE.Models.UserMaster.AddExpence.AddExpence
+@using System.Text.Json;
+@{
+    Layout = "~/Views/Shared/_user_layouy.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Include Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+  
+
+        .form-container {
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .searchable-dropdown {
+            position: relative;
+        }
+
+        .dropdown-items {
+            position: absolute;
+            z-index: 1000;
+            background: #fff;
+            width: 100%;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .dropdown-items div {
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+
+        .dropdown-items div:hover {
+            background: #f0f0f0;
+        }
+
+        .member-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .member-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 10px;
+            width: calc(50% - 10px); 
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: 3px solid #28a745; 
+            transition: all 0.3s ease;
+        }
+
+        .member-card.selected {
+            border-color: #dc3545;
+        }
+
+        .expense-cards {
+            margin-top: 20px;
+        }
+        @@media (max-width: 768px) {
+            .member-card
+
+        {
+            width: 100%; 
+        }
+
+        }
+        .member-card .split-amount {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #28a745; 
+        }
+
+        .expense-cards .card.success {
+            border: 2px solid #28a745;
+        }
+
+        .expense-cards .card.fail {
+            border: 2px solid #dc3545;
+        }
+
+        .search-results {
+            margin-top: 20px;
+        }
+
+        table.table td, table.table th {
+            text-align: center;
+            vertical-align: middle; /* Vertically center the text */
+        }
+
+        .input-group {
+            width: 100%; /* Ensures the input group spans the entire column width */
+        }
+
+        .member-amount {
+            text-align: right; /* Aligns the text inside the input box to the right */
+        }
+
+
+        .animated-checkbox-container {
+            text-align: center;
+        }
+
+        .animated-checkbox {
+            position: relative;
+            width: 40px; /* Increased for better visibility */
+            height: 40px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+            .animated-checkbox input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40px; /* Match checkbox size */
+            height: 40px;
+            background-color: #ddd;
+            border-radius: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .animated-checkbox input:checked ~ .checkmark {
+            background-color: #4caf50; /* Green for checked */
+            transform: scale(1.1);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .animated-checkbox input:checked ~ .checkmark:after {
+            display: block;
+            left: 12px; /* Adjusted for larger checkbox */
+            top: 8px;
+            width: 12px;
+            height: 24px;
+            border: solid white;
+            border-width: 0 4px 4px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Responsive Table Design */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+            table td, table th {
+                border: none; /* Removes all borders */
+                text-align: center;
+                padding: 8px;
+            }
+
+        /* Media Queries for Mobile */
+        @@media (max-width: 768px) {
+            .animated-checkbox
+
+        {
+            width: 30px; /* Smaller size for mobile */
+            height: 30px;
+        }
+
+        .checkmark {
+            width: 30px;
+            height: 30px;
+        }
+
+            .checkmark:after {
+                left: 10px; /* Adjust for smaller size */
+                top: 6px;
+                width: 10px;
+                height: 20px;
+            }
+
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            table td, table th {
+                border: none; /* Removes all borders */
+                text-align: center;
+                padding: 8px;
+            }
+
+        .hidden-borders {
+            border: none;
+        }
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="form-container">
+            <h3 class="text-center mb-4">Add Expense</h3>
+
+
+            @Html.HiddenFor(x => x.ExpenceMasterId,new {
+                style="disply:none",
+                id="txtExpenceMasterID"
+            })
+
+            <!-- Category Dropdown -->
+            <div class="mb-3 searchable-dropdown">
+                <label for="category" class="form-label">Category</label>
+                @Html.DropDownListFor(m=>m.SelectedCategory, Model.Categories, new {
+                        @id = "category",
+                        name = "SelectedCategory",
+                        @class="form-select"
+
+                })
+               @*  <select id="category" name="SelectedCategory" class="form-select">
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Value">@category.Text</option>
+                    }
+                </select> *@
+            </div>
+
+            <div class="mb-3">
+                <label for="expenceDate" class="form-label">Expense Date</label>
+                @Html.TextBoxFor(m => m.ExpenceDate, new
+                    {
+                        id = "expenceDate",
+                        @class = "form-control",
+                        @Value = Model.ExpenceDate.ToString("yyyy-MM-dd") // HTML5 date format
+                    })
+            </div>
+
+
+
+            <!-- Amount Field -->
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount</label>
+                @Html.TextBoxFor(m => m.Amount , new
+                    {
+                        id = "amount",
+                        name = "Amount",
+                        @class = "form-control"
+                    })
+            </div>
+
+            <!-- Description Field -->
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                @Html.TextAreaFor(m => m.Description, new
+                    {
+                        id = "description",
+                        name = "Description",
+                        @class = "form-control"
+                    })
+                @* <textarea id="description" name="Description" class="form-control" placeholder="Enter description"></textarea> *@
+            </div>
+
+            <!-- Family Members -->
+            <h5>Select Family Members</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                 @*    <thead class="table-light">
+                        <tr>
+                            <th>Select</th>
+                            <th>Member Name</th>
+                            <th>Split Amount</th>
+                        </tr>
+                    </thead> *@
+                    <tbody id="member-rows">
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr data-member="@user.Id" class="member-row selected" data-expdetailsid="@user.ExpDetailsId">
+                                <td>
+                                    <div class="animated-checkbox-container">
+                                        <label class="animated-checkbox">
+                                            <input type="checkbox" class="form-check-input member-checkbox" checked />
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>@user.Name</td>
+                                <td>
+                                    <span class="input-group-text">
+                                        <i class="fa fa-indian-rupee-sign"></i>
+                                        <input type="number"
+                                               style="text-align:center !important; border:none"
+                                               class="form-control member-amount"
+                                               value="@user.Amount"
+                                               maxlength="4"
+                                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);"
+                                               placeholder="Enter amount" />
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+
+            <button class="btn btn-primary w-100 mt-3" id="add-expense">Add Expense</button>
+            <button class="btn btn-danger w-100 mt-3" id="add-reset" onclick="window.location.href='../UserMaster/AddExpence'" >Reset</button>
+
+        </div>
+
+        <div class="my-4">
+            <input type="text" class="form-control" id="search-bar" placeholder="Search by description">
+        </div>
+
+
+        <div class="my-4">
+            <h5>Expenses</h5>
+            <div class="row expense-cards">
+                @foreach (var expense in Model.Expenses)
+                {
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <div class="card p-3 @((expense.Amount > 0) ? "success" : "fail")">
+                            <div class="d-flex justify-content-between">
+                                <h6>Category: @expense.Category</h6>
+                                <h6 class="text-end text-muted">
+                                    User: @expense.UserName <br />
+                                </h6>
+                            </div>
+                            <p>Description: @expense.Description</p>
+                            <p>Date: @expense.Date.ToString("dd-MMMM-yyyy")</p>
+                            <p class="amount">
+                                <i class="fa fa-indian-rupee-sign"></i> @expense.Amount
+                            </p>
+
+                            @if (Convert.ToString(Context.Session.GetString("UserId")) != "0" && Convert.ToString(Context.Session.GetString("UserId")) == expense.UserId.ToString())
+                            {
+                            <div class="d-flex justify-content-between mt-3">
+                                <button class="btn btn-sm btn-warning edit-expense"
+                                            data-id="@expense.ExpenseMasterId">
+                                        <i class="fa fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-expense"
+                                    data-id="@expense.ExpenseMasterId">
+                                    <i class="fa fa-trash"></i> Delete
+                                </button>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+             $(document).ready(function () {
+
+                 $(".member-amount").input(function()
+                 {
+                     alert("")
+                     this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
+                 });
+
+
+                   flatpickr("#expenceDate", {
+             dateFormat: "Y-m-d", 
+         defaultDate: "@(Model.ExpenceDate != DateTime.MinValue ? Model.ExpenceDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))",
+         maxDate: "today",
+         allowInput: true 
+         });
+
+
+          $(document).on('click', '.edit-expense', function () {
+             const expenseId = $(this).data('id');
+
+
+                        const url = `../UserMaster/AddExpence?expenseId=${encodeURIComponent(expenseId)}`;
+        window.location.href = url;
+
+             
+        });
+
+        // Delete Expense
+        $(document).on('click', '.delete-expense', function () {
+            const expenseId = $(this).data('id');
+            if (confirm('Are you sure you want to delete this expense?')) {
+                $.ajax({
+                     url: '/UserMaster/DeleteExpense',
+                    type: 'POST',
+                    data: { id: expenseId },
+                    success: function (response) {
+                         if(parseInt(response.value)>0)
+                         {
+                              alert('Expense deleted successfully.');
+                         window.location.href="../UserMaster/AddExpence";
+                         }
+                        
+                    },
+                    error: function () {
+                        alert('Failed to delete expense.');
+                    }
+                });
+            }
+        });
+                 
+      
+
+    
+
+
+            const allRows = $('.member-row');
+        const fixedUserRow = allRows.first();
+
+        initializeSplitAmounts();
+
+        fixedUserRow.addClass('selected');
+        fixedUserRow.css('background-color', 'yellow');
+
+        $('.member-checkbox').not(fixedUserRow.find('.member-checkbox')).on('change', function () {
+            const row = $(this).closest('.member-row');
+            const inputField = row.find('.member-amount');
+
+            if (this.checked) {
+                row.addClass('selected');
+                inputField.prop('disabled', false);
+                updateSplitAmounts();
+            } else {
+                row.removeClass('selected manual-edit');
+                inputField.val(0).prop('disabled', true);
+                updateSplitAmounts();
+            }
+        });
+
+        $('#amount').on('input', function () {
+            updateSplitAmounts();
+        });
+
+        $('.member-amount').on('input', function () {
+            const row = $(this).closest('.member-row');
+            const enteredAmount = parseFloat($(this).val()) || 0;
+
+            if (enteredAmount >= 0) {
+                row.addClass('manual-edit');
+                row.data('manual-value', enteredAmount); // Store manual value
+                updateSplitAmounts();
+            }
+        });
+
+        function initializeSplitAmounts() {
+            allRows.each(function () {
+                $(this).data('manual-value', 0);
+            });
+        }
+
+        function updateSplitAmounts() {
+            const totalAmount = parseFloat($('#amount').val()) || 0;
+            let remainingAmount = totalAmount;
+            const manualRows = $('.member-row.manual-edit');
+            const selectedRows = $('.member-row.selected').not('.manual-edit');
+            const totalManualAmount = manualRows.toArray().reduce((sum, row) => {
+                const manualValue = parseFloat($(row).data('manual-value')) || 0;
+                return sum + manualValue;
+            }, 0);
+
+            remainingAmount -= totalManualAmount;
+
+            if (remainingAmount < 0) {
+                alert('Total manual allocation exceeds the total amount!');
+                return;
+            }
+
+            const autoSplitCount = selectedRows.length;
+            if (autoSplitCount > 0) {
+                const splitAmount = (remainingAmount / autoSplitCount).toFixed(2);
+                selectedRows.each(function () {
+                    $(this).find('.member-amount').val(splitAmount);
+                });
+            }
+        }
+
+        $('#add-expense').on('click', function () {
+            const category = $('#category').val();
+            const description = $('#description').val();
+            const amount = parseFloat($('#amount').val());
+            const DateExp = $("#expenceDate").val();
+            const ExpenceMasterId = $('#txtExpenceMasterID').val();
+
+            const selectedMembers = [];
+            $('#member-rows .member-row').each(function () {
+                const memberId = $(this).data('member');
+                const memberAmount = $(this).find('.member-amount').val() || 0; // Set amount to 0 if empty
+                const ExpDetailsId = $(this).data('expdetailsid');
+
+                // Select row if checkbox is unselected and amount is 0
+                if ($(this).find('.member-checkbox').prop('checked') || memberAmount === '0') {
+                    $(this).addClass('selected'); // Ensure the row is selected
+                }
+
+                if ($(this).hasClass('selected')) {
+                    selectedMembers.push({
+                        Id: memberId,
+                        Name: 'NA',
+                        ExpDetailsId: ExpDetailsId,
+                        Amount: memberAmount
+                    });
+                }
+            });
+
+            let totalMemberAmount = 0;
+            $('#member-rows .member-row.selected').each(function () {
+                const memberAmount = parseFloat($(this).find('.member-amount').val()) || 0;
+                totalMemberAmount += memberAmount;
+            });
+
+            if (!category) {
+                alert("Select Category !");
+                return false;
+            } else if (!description) {
+                alert("Enter Description !");
+                return false;
+            } else if (!amount) {
+                alert("Enter Amount !");
+                return false;
+            } else if (!DateExp) {
+                alert("Select Date !");
+                return false;
+            } else if (totalMemberAmount != amount) {
+                alert(`The total of member amounts does not match the expense amount.`);
+                return false;
+            } else {
+                const data = {
+                    ExpenceMasterId: ExpenceMasterId,
+                    SelectedCategory: category,
+                    Description: description,
+                    Amount: amount,
+                    ExpenceDate: new Date($("#expenceDate").val()).toISOString(),
+                    Users: selectedMembers
+                };
+                console.log(data);
+
+                $.ajax({
+                    url: '@Url.Action("AddExpence", "UserMaster")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        console.log(response);
+                        if (parseInt(response.value) > 0) {
+                            alert(response.text);
+                            window.location.href = "../UserMaster/AddExpence";
+                        } else {
+                            alert('An error occurred.');
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred.');
+                    }
+                });
+            }
+        });
+
+            // Search functionality
+            $('#search-bar').on('input', function () {
+                const searchVal = $(this).val().toLowerCase();
+                $('.expense-cards .card').each(function () {
+                    const text = $(this).text().toLowerCase();
+                    $(this).toggle(text.includes(searchVal));
+                });
+            });
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

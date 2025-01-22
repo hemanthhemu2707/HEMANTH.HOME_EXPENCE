@@ -1,0 +1,466 @@
+﻿@model HEMANTH.HOME_EXPENCE.Models.AdminMaster.Family.FamilyMemberDetails
+@{
+    Layout = "~/Views/Shared/_admin_layouy.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Family Members</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        .note-box {
+            background-color: #f8d7da;
+            padding: 2px;
+            margin: 5px;
+            font-size: 12px;
+            border-left: 8px solid #dc3545;
+        }
+
+        .blinking-text {
+            font-weight: bold;
+            color: #dc3545;
+            animation: blink 1s infinite step-start;
+        }
+        @@keyframes blink {
+            50%
+
+        {
+            opacity: 0;
+        }
+
+        }
+
+        #add-family-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        #user-cards .card, #inactive-cards .card {
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .card-body {
+            padding: 5px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .card-footer i {
+                cursor: pointer;
+                font-size: 20px;
+            }
+
+                .card-footer i:hover {
+                    color: #007bff;
+                }
+
+        .otp-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            max-width: 100%;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Style for OTP inputs */
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 20px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+
+        /* Add responsiveness for mobile view */
+        @@media (max-width: 576px) {
+            .otp-input
+
+        {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+        }
+
+        }
+
+        /* Green border for valid input */
+        .otp-input.valid {
+            border-color: green;
+        }
+
+        /* Red border for invalid input */
+        .otp-input.invalid {
+            border-color: red;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row mb-4" style="margin-top:-50px;">
+            <div class="col-md-12">
+                <p class="note-box"><b>1.</b> User Email should be proper, if not, mail will not be delivered.</p>
+                <p class="note-box"><b>2.</b> Before Adding the User, make sure the family is created and its Family Ref ID is referenced.</p>
+                <p class="note-box"><b>3.</b> Activation Status will be updated once the User is added.</p>
+                <p class="note-box"><b>4.</b> Registration link will be sent after creating the user.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Add Family Member</h3>
+                <form id="add-family-form">
+                    <input type="hidden" name="FamilyId" value="@Model.lstUsers[0].FamilyId" />
+                    <input type="hidden" name="FamilyKey" value="@Model.lstUsers[0].FamilyKey" />
+                    <div class="form-group mb-3">
+                        <label for="userName">User Name:</label>
+                        <input type="text" class="form-control" id="userName" name="UserName" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="userEmail">Email Address:</label>
+                        <input type="email" class="form-control" id="userEmail" name="UserEmailAdress" required>
+                    </div>                   
+                    <button type="button" class="form-control btn btn-primary mt-3" id="verifyEmailButton">Verify Email</button>
+                    <br />
+                    <!-- OTP Section (Initially hidden) -->
+                    <div class="form-group otp-section" style="display: none;">
+                        <br />
+
+                        <div class="d-flex justify-content-between">
+                            <input type="text" maxlength="1" class="otp-input" id="otp1">
+                            <input type="text" maxlength="1" class="otp-input" id="otp2">
+                            <input type="text" maxlength="1" class="otp-input" id="otp3">
+                            <input type="text" maxlength="1" class="otp-input" id="otp4">
+                        </div>
+                        <button type="button" id="verifyOtpBtn" class="form-control btn btn-success mt-3">Verify OTP</button>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="userName">User Phone:</label>
+                        <input type="text" class="form-control" id="userPhone" name="UserPhoneNumber" required> 
+                    </div>
+                    @if (Convert.ToInt32(Context.Session.GetString("FamilyCount")) == 0)
+                    {
+                        <h6><b style="color:red">Please Create a Family Before Adding the Family Member <a href="../AdminMaster/FamilyDetails">Click here to add</a> </b></h6>
+                    }
+                    else
+                    {
+                        <button type="submit" style="display: none;" id="addToFamilyButton" class="form-control btn btn-primary mt-3">Add to Family</button>
+                    }
+                </form>
+            </div>
+        </div>
+        <br />
+
+        <h4>Active Users</h4>
+
+        <div class="row mt-4" id="user-cards">
+            <br />
+            @foreach (var member in Model.lstUsers.Where(u => u.ActiveStatus == 1))
+            {
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@member.UserName</h5>
+                            <p class="card-text">Phone: @member.UserPhoneNumber</p>
+                            <p class="card-text">Email: @member.UserEmailAdress</p>
+                        </div>
+                        <div class="card-footer">
+                            @if (Context.Session.GetString("UserId") != member.UserId.ToString())
+                            {
+                                <i class="fas fa-edit" onclick="editUser('@member.UserId', '@member.UserName', '@member.UserEmailAdress', '@member.UserPhoneNumber', @member.ActiveStatus)"></i>
+                                <i class="fas fa-trash" onclick="deleteUser('@member.UserId', '@member.UserName')"></i>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <h4>Deactivated Users</h4>
+        <div class="row mt-4" id="inactive-cards">
+            @foreach (var member in Model.lstUsers.Where(u => u.ActiveStatus == 0))
+            {
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@member.UserName</h5>
+                            <p class="card-text">Phone: @member.UserPhoneNumber</p>
+                            <p class="card-text">Email: @member.UserEmailAdress</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input activate-toggle" id="toggle-@member.UserId" data-userid="@member.UserId" data-username="@member.UserName">
+                                <label class="custom-control-label" for="toggle-@member.UserId">Activate</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS CDN -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+                 $('#userPhone').on('input', function() {
+            var inputVal = $(this).val();
+            if (/^[6789][0-9]{0,9}$/.test(inputVal)) {
+                $(this).removeClass("invalid").addClass("valid");
+            } else {
+                    $(this).val('');
+                }
+            if (inputVal.length > 10) {
+                $(this).val(inputVal.slice(0, 10));
+            }
+        });
+
+
+            let generatedOtp = '';
+
+
+                    function disableButton(button, text) {
+                $(button).prop('disabled', true).html(`<span class="spinner-border spinner-border-sm"></span> ${text}`);
+            }
+
+            function enableButton(button, text) {
+                $(button).prop('disabled', false).html(text);
+            }
+
+
+
+        $('#verifyEmailButton').click(function () {
+                  const userEmail = $('#userEmail').val();
+                       if (!validateEmail(userEmail)) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+
+                  disableButton('#verifyEmailButton', 'Sending OTP...');      
+
+
+
+        $.ajax({
+            url: '/AdminMaster/SendEmailVerification',
+            type: 'POST',
+                data: { email: userEmail },
+            success: function (response) {
+                     if (response.success) {
+                            $('#verifyEmailButton').html('<span class="fa fa-check-circle"></span> Sent').addClass('btn-success');
+                            generatedOtp = response.otp;  
+                            $('.otp-section').show();  
+                        } else {
+                                if(response.message!=null)
+                                {
+                                    alert(response.message);
+                                                                    enableButton('#verifyEmailButton', 'Verify Email');
+                                    return false;
+                                    }
+                            alert('Failed to send OTP. Please try again.');
+                            enableButton('#verifyEmailButton', 'Verify Email');
+                        }
+            },
+            error: function () {
+              alert('Error while sending OTP!'); setTimeout(() => {
+                        $('.otp-section').slideDown();
+                        enableButton('#sendOtpBtn', 'Send OTP');
+                    }, 2000);            }
+        });
+    });
+        $(".otp-input").on("input", function() {
+               var inputVal = $(this).val();
+
+               // Check if the input value is a number (valid OTP character)
+               if (/^\d$/.test(inputVal)) {
+                   $(this).removeClass("invalid").addClass("valid");
+               } else {
+                       $(this).val('');
+                       $(this).removeClass("valid").addClass("invalid");
+               }
+               let currentInput = $(this);
+                if (currentInput.val().length === 1) {
+                    currentInput.next('.otp-input').focus();
+                } else if (currentInput.val().length === 0) {
+                    currentInput.prev('.otp-input').focus();
+                }
+           });
+
+     $('#verifyOtpBtn').click(function () {
+            let enteredOtp = $('#otp1').val() + $('#otp2').val() + $('#otp3').val() + $('#otp4').val();
+            
+            if (enteredOtp.length < 4) {
+                alert('Please enter all OTP digits.');
+                return;
+            }
+
+            disableButton('#verifyOtpBtn', 'Verifying...');
+            
+            setTimeout(function () {
+                if (enteredOtp === generatedOtp) {
+                    alert('OTP verified successfully!');
+                    $('#verifyOtpBtn').html('<span class="fa fa-check-circle"></span> Verified').addClass('btn-success');
+                    $('#addToFamilyButton').show();  // Enable Add to Family button
+                    $('#verifyOtpBtn').prop('disabled', true);  // Disable Verify OTP button
+                } else {
+                    alert('Invalid OTP. Please try again.');
+                    enableButton('#verifyOtpBtn', 'Verify OTP');
+                }
+            }, 2000);  // Simulate verification delay
+        });
+
+
+
+
+
+
+                 $('.activate-toggle').change(function () {
+            var isChecked = $(this).is(':checked'); 
+            var userId = $(this).data('userid');
+            var userName = $(this).data('username');
+            var action = isChecked ? 'activate' : 'deactivate';
+
+            if (confirm(`Are you sure you want to ${action} ${userName}?`)) {
+                $.ajax({
+                    url: '/AdminMaster/DeleteUser',
+                    type: 'POST',
+                    data: { id: userId, action: action }, 
+                    success: function (response) {
+                        if (response.success) {
+                            alert(`${userName} has been ${action}d successfully!`);
+                            location.reload(); 
+                        } else {
+                            alert('Error: ' + response.message);
+                            $(`#toggle-${userId}`).prop('checked', !isChecked);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + error);
+                        $(`#toggle-${userId}`).prop('checked', !isChecked);
+                    }
+                });
+            } else {
+                $(this).prop('checked', !isChecked);
+            }
+        });
+
+
+            $('#add-family-form').submit(function (e) {
+                e.preventDefault();
+                            const $button = $('#addToFamilyButton'); 
+
+                var userName = $('#userName').val();
+                var userEmail = $('#userEmail').val();
+                var userPhone = $('#userPhone').val();
+                var familyId = $('input[name="FamilyId"]').val();
+                var familyKey = $('input[name="FamilyKey"]').val();
+
+                if (!validateEmail(userEmail)) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+                var formData = {
+                    UserName: userName,
+                    UserEmailAdress: userEmail,
+                    UserPhoneNumber: userPhone,
+                    FamilyId: familyId,
+                    FamilyKey: familyKey
+                };
+                                        $button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Adding...');
+
+                $.ajax({
+                    url: '/AdminMaster/AddFamilyMember',  
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Family member added successfully!');
+                            location.reload(); 
+                        } else {
+                            alert('Failed to add family member.');
+                                                                                                    $button.prop('disabled', false).html('Add Family Member');
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while adding the family member.');
+                                                                    $button.prop('disabled', false).html('Add Family Member');
+
+                    }
+                });
+            });
+
+            // Validate email address
+            function validateEmail(email) {
+                var regex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                return regex.test(email);
+            }
+
+            // Edit user function
+            window.editUser = function (UserId,UserName,UserEmail,UserPhone,ActiveStatus) {
+                $("#userPhone").val();
+                $('#userEmail').val();
+                $('#userName').val();
+                $('#').val();
+
+            };
+
+            // Delete user function
+                   window.deleteUser = function (userId, userName) {
+            if (confirm('Are you sure you want to delete ' + userName + '?')) {
+                $.ajax({
+                    url: '/AdminMaster/DeleteUser',
+                    type: 'POST',                     
+                    data: { id: userId },             
+                    success: function (response) {
+                        if (response.success) {
+                            alert('User deleted successfully!');
+                            window.location.reload();
+                            familyMembers = familyMembers.filter(function (member) {
+                                return member.UserId !== userId;
+                            });
+                            displayFamilyMembers();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + error);
+                    }
+                });
+            }
+        };
+        function validateEmail(email) {
+            const regex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return regex.test(email);
+        }
+
+        });
+    </script>
+</body>
+</html>
