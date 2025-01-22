@@ -269,6 +269,7 @@ namespace HEMANTH.HOME_EXPENCE.Repositories.Login
                     catch(Exception ex)
                     {
 
+
                     }
 
                     string userEmailBody = $"<p>Dear {request.UserName},</p><p>Your registration was successful. Please Login.</p>";
