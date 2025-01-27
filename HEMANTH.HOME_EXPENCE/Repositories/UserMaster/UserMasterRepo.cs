@@ -437,7 +437,7 @@ namespace HEMANTH.HOME_EXPENCE.Repositories.UserMaster
                                     {
                                         UserName = login.UserName,
                                         Amount = exp.ExpensePrice,
-                                        Description = cate.CatagoryName,
+                                        Description = exp.ExpenceDescription,
                                         Date= exp.ExpenceDate,
                                         FamilyName= family.FamilyName,
                                         SplitDetails = _dbContext.ExpDetails
