@@ -272,122 +272,301 @@ namespace HEMANTH.HOME_EXPENCE.Repositories.UserMaster
 
 
 
-        public async Task<DownloadLastBill> GetExpenceDetailsBill(DateTime fromDate, DateTime toDate, int Userid)
+        //public async Task<DownloadLastBill> GetExpenceDetailsBill(DateTime fromDate, DateTime toDate, int Userid)
+        //{
+        //    DownloadLastBill downloadLastBill = new DownloadLastBill();
+        //    //        DateTime adjustedToDate = toDate.Date.AddDays(1).AddTicks(-1);
+
+        //    try
+        //    {
+
+        //            var FamilyId = _dbContext.LoginDetails
+        //        .FirstOrDefault(x => x.UserId == Userid).UserFamilyId;
+
+        //            var expenseSummary =
+        //from x in _dbContext.ExpDetails
+        //where x.ExpenceUserID != x.ParentUserId 
+        //      && x.ExpenceFamilyId == FamilyId 
+        //      && x.ExpenceDetailsEntryDate >= fromDate
+        //      && x.ExpenceDetailsEntryDate <= adjustedToDate
+        //group x by new
+        //{
+        //    user1 = x.ExpenceUserID < x.ParentUserId ? x.ExpenceUserID : x.ParentUserId,
+        //    user2 = x.ExpenceUserID < x.ParentUserId ? x.ParentUserId : x.ExpenceUserID
+        //} into grouped
+        //select new
+        //{
+        //    user_1 = grouped.Key.user1,
+        //    user_2 = grouped.Key.user2,
+        //    user_1_to_user_2_expense = grouped.Where(e => e.ExpenceUserID < e.ParentUserId).Sum(e => e.ExpencePersPrice),
+        //    user_2_to_user_1_expense = grouped.Where(e => e.ExpenceUserID > e.ParentUserId).Sum(e => e.ExpencePersPrice)
+        //};
+
+
+        //            var result =
+        //                from es in expenseSummary
+        //                join u1 in _dbContext.LoginDetails on es.user_1 equals u1.UserId
+        //                join u2 in _dbContext.LoginDetails on es.user_2 equals u2.UserId
+        //                where u1.UserFamilyId==FamilyId
+        //                select new
+        //                {
+        //                    user_1_name = u1.UserName,
+        //                    user_2_name = u2.UserName,
+        //                    net_amount = es.user_1_to_user_2_expense - es.user_2_to_user_1_expense
+        //                };
+
+
+        //            var formattedResult = result
+        //                .AsEnumerable()  // Switch to client-side
+        //                .Select(r => new
+        //                {
+        //                    PaymentDetails = r.net_amount < 0
+        //                        ? $"{r.user_2_name} needs to pay {Math.Abs(r.net_amount)} to {r.user_1_name}"
+        //                        : $"{r.user_1_name} needs to pay {r.net_amount} to {r.user_2_name}"
+        //                })
+        //                .ToList();
+        //            formattedResult = formattedResult
+        //                .Where(x => !x.PaymentDetails.Contains("0.0"))
+        //                .ToList();
+
+
+        //            downloadLastBill.lstExprackMap = new List<ExprackMap>();
+        //            foreach (var det in formattedResult)
+        //            {
+        //                downloadLastBill.lstExprackMap.Add(new
+        //                    ExprackMap
+        //                {
+        //                    ExpPaymentDetails = det.PaymentDetails
+        //                });
+        //            }
+
+
+
+        //            var usersUnderFamily = _dbContext.LoginDetails
+        //                .Where(x => x.UserFamilyId == FamilyId)
+        //                .ToList();
+
+        //            var expenseSums = await (from exp in _dbContext.ExpMaster
+        //                                     where usersUnderFamily.Select(u => u.UserId).Contains(exp.ExpenceUserId) && exp.ExpenceFamId==FamilyId && exp.ExpenceDate>=fromDate && exp.ExpenceDate<=adjustedToDate
+        //                                     group exp by exp.ExpenceUserId into grouped
+        //                                     select new
+        //                                     {
+        //                                         UserId = grouped.Key,
+        //                                         AmountSpent = grouped.Sum(x => x.ExpensePrice)
+        //                                     }).ToListAsync();
+
+
+        //            var expenseSplits = await (from expd in _dbContext.ExpDetails
+        //                                       where usersUnderFamily.Select(u => u.UserId).Contains(expd.ExpenceUserID)
+        //                                          && expd.ExpenceFamilyId == FamilyId
+        //                                          && expd.ExpenceDetailsEntryDate >= fromDate.Date
+        //                                          && expd.ExpenceDetailsEntryDate <= adjustedToDate
+        //                                       group expd by expd.ExpenceUserID into grouped
+        //                                       select new
+        //                                       {
+        //                                           UserId = grouped.Key,
+        //                                           AmountSplitted = grouped.Sum(x => x.ExpencePersPrice)
+        //                                       }).ToListAsync();
+
+        //            var result1 = from user in usersUnderFamily
+        //                         join exp in expenseSums on user.UserId equals exp.UserId into expGroup
+        //                         join split in expenseSplits on user.UserId equals split.UserId into splitGroup
+        //                         select new UserExpense
+        //                         {
+        //                             UserID = user.UserId,
+        //                             UserName = user.UserName,
+        //                             AmountSpent = expGroup.Sum(x => x.AmountSpent),
+        //                             AmountSplitted = splitGroup.Sum(x => x.AmountSplitted)
+        //                         };
+
+        //            downloadLastBill.Users = result1.ToList();
+
+        //        DateTime startDate = new DateTime(DateTime.Now.Year, 1, 10);
+        //        DateTime endDate = new DateTime(DateTime.Now.Year, 2, 10);
+
+        //        var userTransactions = (from ed in _dbContext.ExpDetails
+        //                                join em in _dbContext.ExpMaster on ed.ExpenceDetailsExpID equals em.ExpenceID
+        //                                where ed.ExpenceFamilyId == 14 &&
+        //                                      em.ExpenceDate >= startDate &&
+        //                                      em.ExpenceDate <= endDate
+        //                                group ed by new { ed.ParentUserId, ed.ExpenceUserID } into g
+        //                                select new
+        //                                {
+        //                                    OwesUser = g.Key.ParentUserId,
+        //                                    PaidByUser = g.Key.ExpenceUserID,
+        //                                    Amount = g.Sum(x => x.ExpencePersPrice)
+        //                                }).ToList();
+
+
+        //        var userBalances = (from ut1 in userTransactions
+        //                            let paidAmount = userTransactions.Where(ut2 => ut2.OwesUser == ut1.PaidByUser &&
+        //                                                                           ut2.PaidByUser == ut1.OwesUser)
+        //                                                              .Sum(x => x.Amount)
+        //                            select new
+        //                            {
+        //                                OwesUser = ut1.OwesUser,
+        //                                PaidByUser = ut1.PaidByUser,
+        //                                Balance = ut1.Amount - (paidAmount)
+        //                            }).Where(ub => ub.Balance > 0).ToList();
+
+        //        var result = (from ub in userBalances
+        //                      join u1 in _dbContext.LoginDetails on ub.OwesUser equals u1.UserId
+        //                      join u2 in _dbContext.LoginDetails on ub.PaidByUser equals u2.UserId
+        //                      select new
+        //                      {
+        //                          TransactionDescription = $"{u1.UserName} needs to pay {Math.Abs(ub.Balance)} to {u2.UserName}"
+        //                      }).OrderBy(x => x.TransactionDescription).ToList();
+
+
+
+
+        //        var individualExpensesFromDetails = (from ed in _dbContext.ExpDetails
+        //                                             join u in _dbContext.LoginDetails on ed.ExpenceUserID equals u.UserId
+        //                                             join em in _dbContext.ExpMaster on ed.ExpenceDetailsExpID equals em.ExpenceID
+        //                                             where ed.ExpenceFamilyId == 14 &&
+        //                                                   em.ExpenceDate >= startDate &&
+        //                                                   em.ExpenceDate <= endDate
+        //                                             group ed by new { u.UserId, u.UserName } into g
+        //                                             orderby g.Key.UserId
+        //                                             select new
+        //                                             {
+        //                                                 UserId = g.Key.UserId,
+        //                                                 UserName = g.Key.UserName,
+        //                                                 IndividualTotalExpense = g.Sum(x => x.ExpencePersPrice)
+        //                                             }).ToList();
+
+        //        var individualExpensesFromMaster = (from em in _dbContext.ExpMaster
+        //                                            join u in _dbContext.LoginDetails on em.ExpenceUserId equals u.UserId
+        //                                            where em.ExpenceFamId == 14 &&
+        //                                                  em.ExpenceDate >= startDate &&
+        //                                                  em.ExpenceDate <= endDate
+        //                                            group em by new { u.UserId, u.UserName } into g
+        //                                            orderby g.Key.UserId
+        //                                            select new
+        //                                            {
+        //                                                UserId = g.Key.UserId,
+        //                                                UserName = g.Key.UserName,
+        //                                                IndividualTotalExpense = g.Sum(x => x.ExpensePrice)
+        //                                            }).ToList();
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return downloadLastBill;
+        //    }
+
+        //    return downloadLastBill;
+        //}
+
+
+        public async Task<DownloadLastBill> GetExpenceDetailsBill(DateTime startDate, DateTime endDate, int Userid)
         {
             DownloadLastBill downloadLastBill = new DownloadLastBill();
-            DateTime adjustedToDate = toDate.Date.AddDays(1).AddTicks(-1);
 
             try
             {
+                var individualExpensesFromDetails = (from ed in _dbContext.ExpDetails
+                                                     join u in _dbContext.LoginDetails on ed.ExpenceUserID equals u.UserId
+                                                     join em in _dbContext.ExpMaster on ed.ExpenceDetailsExpID equals em.ExpenceID
+                                                     where ed.ExpenceFamilyId == 14 &&
+                                                           em.ExpenceDate >= startDate &&
+                                                           em.ExpenceDate <= endDate
+                                                     group ed by new { u.UserId, u.UserName } into g
+                                                     orderby g.Key.UserId
+                                                     select new
+                                                     {
+                                                         UserId = g.Key.UserId,
+                                                         UserName = g.Key.UserName,
+                                                         AmountSpent = g.Sum(x => x.ExpencePersPrice)
+                                                     }).ToList();
 
-                var FamilyId = _dbContext.LoginDetails
-            .FirstOrDefault(x => x.UserId == Userid).UserFamilyId;
+                // Get expenses each user paid on behalf of others
+                var individualExpensesFromMaster = (from em in _dbContext.ExpMaster
+                                                    join u in _dbContext.LoginDetails on em.ExpenceUserId equals u.UserId
+                                                    where em.ExpenceFamId == 14 &&
+                                                          em.ExpenceDate >= startDate &&
+                                                          em.ExpenceDate <= endDate
+                                                    group em by new { u.UserId, u.UserName } into g
+                                                    orderby g.Key.UserId
+                                                    select new
+                                                    {
+                                                        UserId = g.Key.UserId,
+                                                        UserName = g.Key.UserName,
+                                                        AmountPaid = g.Sum(x => x.ExpensePrice)
+                                                    }).ToList();
 
-                var expenseSummary =
-    from x in _dbContext.ExpDetails
-    where x.ExpenceUserID != x.ParentUserId 
-          && x.ExpenceFamilyId == FamilyId 
-          && x.ExpenceDetailsEntryDate >= fromDate
-          && x.ExpenceDetailsEntryDate <= adjustedToDate
-    group x by new
-    {
-        user1 = x.ExpenceUserID < x.ParentUserId ? x.ExpenceUserID : x.ParentUserId,
-        user2 = x.ExpenceUserID < x.ParentUserId ? x.ParentUserId : x.ExpenceUserID
-    } into grouped
-    select new
-    {
-        user_1 = grouped.Key.user1,
-        user_2 = grouped.Key.user2,
-        user_1_to_user_2_expense = grouped.Where(e => e.ExpenceUserID < e.ParentUserId).Sum(e => e.ExpencePersPrice),
-        user_2_to_user_1_expense = grouped.Where(e => e.ExpenceUserID > e.ParentUserId).Sum(e => e.ExpencePersPrice)
-    };
+                // Merging the expenses
+                var mergedExpenses = (from detail in individualExpensesFromDetails
+                                      join master in individualExpensesFromMaster
+                                      on detail.UserId equals master.UserId into joined
+                                      from master in joined.DefaultIfEmpty()
+                                      select new
+                                      {
+                                          UserId = detail.UserId,
+                                          UserName = detail.UserName,
+                                          AmountSpent = detail.AmountSpent,
+                                          AmountPaid = master?.AmountPaid ?? 0
+                                      }).ToList();
 
-
-                var result =
-                    from es in expenseSummary
-                    join u1 in _dbContext.LoginDetails on es.user_1 equals u1.UserId
-                    join u2 in _dbContext.LoginDetails on es.user_2 equals u2.UserId
-                    where u1.UserFamilyId==FamilyId
-                    select new
-                    {
-                        user_1_name = u1.UserName,
-                        user_2_name = u2.UserName,
-                        net_amount = es.user_1_to_user_2_expense - es.user_2_to_user_1_expense
-                    };
-
-
-                var formattedResult = result
-                    .AsEnumerable()  // Switch to client-side
-                    .Select(r => new
-                    {
-                        PaymentDetails = r.net_amount < 0
-                            ? $"{r.user_2_name} needs to pay {Math.Abs(r.net_amount)} to {r.user_1_name}"
-                            : $"{r.user_1_name} needs to pay {r.net_amount} to {r.user_2_name}"
-                    })
-                    .ToList();
-                formattedResult = formattedResult
-                    .Where(x => !x.PaymentDetails.Contains("0.0"))
-                    .ToList();
+                var userTransactions = (from ed in _dbContext.ExpDetails
+                                        join em in _dbContext.ExpMaster on ed.ExpenceDetailsExpID equals em.ExpenceID
+                                        where ed.ExpenceFamilyId == 14 &&
+                                              em.ExpenceDate >= startDate &&
+                                              em.ExpenceDate <= endDate
+                                        group ed by new { ed.ParentUserId, ed.ExpenceUserID } into g
+                                        select new
+                                        {
+                                            OwesUser = g.Key.ParentUserId,
+                                            PaidByUser = g.Key.ExpenceUserID,
+                                            Amount = g.Sum(x => x.ExpencePersPrice)
+                                        }).ToList();
 
 
-                downloadLastBill.lstExprackMap = new List<ExprackMap>();
-                foreach (var det in formattedResult)
+                var userBalances = (from ut1 in userTransactions
+                                    let paidAmount = userTransactions.Where(ut2 => ut2.OwesUser == ut1.PaidByUser &&
+                                                                                   ut2.PaidByUser == ut1.OwesUser)
+                                                                      .Sum(x => x.Amount)
+                                    select new
+                                    {
+                                        OwesUser = ut1.OwesUser,
+                                        PaidByUser = ut1.PaidByUser,
+                                        Balance = ut1.Amount - (paidAmount)
+                                    }).Where(ub => ub.Balance > 0).ToList();
+
+                var resultListMap = (from ub in userBalances
+                              join u1 in _dbContext.LoginDetails on ub.OwesUser equals u1.UserId
+                              join u2 in _dbContext.LoginDetails on ub.PaidByUser equals u2.UserId
+                              select new ExprackMap
+                              {
+                                  ExpPaymentDetails = $"{u2.UserName} needs to pay {Math.Abs(ub.Balance)} to {u1.UserName}"
+                              }).OrderBy(x => x.ExpPaymentDetails).ToList();
+
+
+                // Populate DownloadLastBill with users
+                downloadLastBill.Users = mergedExpenses.Select(exp => new UserExpense
                 {
-                    downloadLastBill.lstExprackMap.Add(new
-                        ExprackMap
-                    {
-                        ExpPaymentDetails = det.PaymentDetails
-                    });
-                }
+                    SerialNumber = exp.UserId,
+                    UserName = exp.UserName,
+                    AmountSpent = exp.AmountPaid ,
+                    UserID = exp.UserId,
+                    AmountSplitted = exp.AmountSpent, 
+                    ExpenceDate = startDate,
+                    
+                }).ToList();
 
-            
-
-                var usersUnderFamily = _dbContext.LoginDetails
-                    .Where(x => x.UserFamilyId == FamilyId)
-                    .ToList();
-
-                var expenseSums = await (from exp in _dbContext.ExpMaster
-                                         where usersUnderFamily.Select(u => u.UserId).Contains(exp.ExpenceUserId) && exp.ExpenceFamId==FamilyId && exp.ExpenceDate>=fromDate && exp.ExpenceDate<=adjustedToDate
-                                         group exp by exp.ExpenceUserId into grouped
-                                         select new
-                                         {
-                                             UserId = grouped.Key,
-                                             AmountSpent = grouped.Sum(x => x.ExpensePrice)
-                                         }).ToListAsync();
-
-
-                var expenseSplits = await (from expd in _dbContext.ExpDetails
-                                           where usersUnderFamily.Select(u => u.UserId).Contains(expd.ExpenceUserID)
-                                              && expd.ExpenceFamilyId == FamilyId
-                                              && expd.ExpenceDetailsEntryDate >= fromDate.Date
-                                              && expd.ExpenceDetailsEntryDate <= adjustedToDate
-                                           group expd by expd.ExpenceUserID into grouped
-                                           select new
-                                           {
-                                               UserId = grouped.Key,
-                                               AmountSplitted = grouped.Sum(x => x.ExpencePersPrice)
-                                           }).ToListAsync();
-
-                var result1 = from user in usersUnderFamily
-                             join exp in expenseSums on user.UserId equals exp.UserId into expGroup
-                             join split in expenseSplits on user.UserId equals split.UserId into splitGroup
-                             select new UserExpense
-                             {
-                                 UserID = user.UserId,
-                                 UserName = user.UserName,
-                                 AmountSpent = expGroup.Sum(x => x.AmountSpent),
-                                 AmountSplitted = splitGroup.Sum(x => x.AmountSplitted)
-                             };
-
-                downloadLastBill.Users = result1.ToList();
+                downloadLastBill.FamilyName = "Family Expense Report";
+                downloadLastBill.BillMonth = startDate.ToString("MMMM yyyy");
+                downloadLastBill.lstExprackMap=resultListMap;
             }
             catch (Exception ex)
             {
+                // Log the exception here if necessary
                 return downloadLastBill;
             }
 
             return downloadLastBill;
         }
+
 
 
         public async Task<FamilyTableDBTypes> GetFamilyInformation(int userId)
